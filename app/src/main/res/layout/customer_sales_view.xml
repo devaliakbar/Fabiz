@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="160dp"
+        android:id="@+id/main_parent"
+        android:background="@color/app_background"
+        android:orientation="horizontal"
+        android:padding="18dp">
+
+
+    <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+            android:paddingBottom="11dp">
+
+        <TextView
+                android:id="@+id/cust_sale_view_detail"
+                style="@style/text_size_small"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_margin="5dp"
+                android:layout_weight="3"
+                android:gravity="center"
+                android:textColor="@color/text_color"
+                android:textStyle="bold"
+                tools:text="130" />
+
+        <TextView
+                android:id="@+id/cust_sale_view_price"
+                style="@style/text_size_small"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_margin="5dp"
+                android:layout_weight="2"
+                android:gravity="center"
+                android:textColor="@color/text_color"
+                android:textStyle="bold"
+                tools:text="80" />
+
+        <TextView
+                android:id="@+id/cust_sale_view_qty"
+                style="@style/text_size_small"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_margin="5dp"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:textColor="@color/text_color"
+                android:textStyle="bold"
+                tools:text="30" />
+
+        <TextView
+                android:id="@+id/cust_sale_view_unit"
+                style="@style/text_size_small"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_margin="5dp"
+                android:layout_weight="2"
+                android:gravity="center"
+                android:textColor="@color/text_color"
+                android:textStyle="bold"
+                tools:text="80" />
+
+        <TextView
+                android:id="@+id/cust_sale_view_total"
+                style="@style/text_size_small"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_margin="5dp"
+                android:layout_weight="2"
+                android:gravity="center"
+                android:textColor="@color/text_color"
+                android:textStyle="bold"
+                tools:text="80" />
+
+        <TextView
+                android:id="@+id/cust_sale_view_return"
+                style="@style/text_size_small"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_margin="5dp"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:textColor="@color/text_color"
+                android:textStyle="bold"
+                tools:text="30" />
+
+
+        <ImageButton
+                android:id="@+id/cust_sale_view_rmv_btn"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:background="@drawable/button_item_remove"
+                android:src="@drawable/ic_remove_blue" />
+
+    </LinearLayout>
+
+
+    <View
+            android:layout_width="match_parent"
+            android:layout_height="0.5dp"
+            android:layout_alignParentBottom="true"
+            android:layout_margin="7dp"
+            android:background="@color/colorPrimaryDark" />
+
+</RelativeLayout>

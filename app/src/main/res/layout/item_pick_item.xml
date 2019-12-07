@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tool="http://schemas.android.com/tools"
+        android:id="@+id/main_parent"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="15dp"
+        android:background="@drawable/button_color_main_home_icon"
+        android:orientation="vertical"
+        android:padding="18dp">
+
+
+    <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
+            android:gravity="left"
+            android:orientation="horizontal">
+
+        <TextView
+                android:id="@+id/id"
+                style="@style/text_size_mid_l"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/text_color"
+                tool:text="WASHING POWDER" />
+
+        <TextView
+                style="@style/text_size_mid_l"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/text_color"
+                tool:text=" / " />
+
+        <TextView
+                android:id="@+id/name"
+                style="@style/text_size_mid_l"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/text_color"
+                tool:text="WASHING POWDER" />
+
+
+    </LinearLayout>
+
+    <TextView
+            android:id="@+id/brand"
+            style="@style/text_size_med"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
+            tool:text="Brand: 15" />
+
+    <TextView
+            android:id="@+id/category"
+            style="@style/text_size_med"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
+            tool:text="Category: 15" />
+
+    <View
+            android:layout_width="match_parent"
+            android:layout_height="1.5dp"
+            android:layout_marginBottom="10dp"
+            android:background="@color/app_background" />
+
+    <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+        <Button
+                android:id="@+id/neg"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:background="@drawable/button_normal_grey"
+                android:text="-"
+                android:textAllCaps="false"
+                android:textColor="@color/text_color"
+                android:textSize="29sp" />
+
+        <LinearLayout
+                android:layout_width="85dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="7dp"
+                android:layout_marginEnd="7dp"
+                android:background="@drawable/rounded_border_grey_">
+
+            <EditText
+                    android:id="@+id/qty_for_req"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginStart="1dp"
+                    android:layout_marginTop="1dp"
+                    android:layout_marginEnd="1dp"
+                    android:layout_marginBottom="1dp"
+                    android:background="@drawable/rounded_border_white_"
+                    android:enabled="false"
+                    android:gravity="center"
+                    android:inputType="number"
+                    android:padding="20dp"
+                    android:text="0" />
+
+
+        </LinearLayout>
+
+        <Button
+                android:id="@+id/pos"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:background="@drawable/button_normal_grey"
+                android:text="+"
+                android:textAllCaps="false"
+                android:textColor="@color/text_color"
+                android:textSize="22sp" />
+    </LinearLayout>
+</LinearLayout>

@@ -1,0 +1,201 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/app_background"
+        android:orientation="vertical"
+        android:padding="18dp"
+        tools:context=".MainHome">
+
+
+    <LinearLayout
+            android:id="@+id/home_cust_head"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
+            android:orientation="horizontal"
+            android:visibility="invisible">
+
+        <TextView
+                android:id="@+id/name_txt"
+                style="@style/text_size_large"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:textColor="@color/text_color"
+                tools:text="Hai Salman!" />
+
+
+        <ImageButton
+                android:id="@+id/home_settings"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:background="@drawable/button_color_app_background"
+                android:padding="30dp"
+                android:src="@drawable/ic_settings_main" />
+
+    </LinearLayout>
+
+
+    <TextView
+            android:id="@+id/home_cust_below_head"
+            style="@style/text_size_med"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="33dp"
+            android:text="Make your sales awesome!"
+            android:textColor="@color/text_color"
+            android:visibility="invisible" />
+
+
+    <LinearLayout
+            android:id="@+id/cont_1"
+            android:layout_width="match_parent"
+            android:layout_height="170dp"
+            android:layout_marginBottom="7dp"
+            android:orientation="horizontal">
+
+        <LinearLayout
+                android:id="@+id/home_cust"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_marginEnd="7dp"
+                android:layout_weight="1"
+                android:background="@drawable/button_color_main_home_icon"
+                android:clickable="true"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:visibility="invisible">
+
+
+            <ImageView
+                    android:id="@+id/home_cust_img"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:duplicateParentState="true"
+                    android:src="@drawable/main_home_customer" />
+
+            <TextView
+                    android:id="@+id/home_cust_txt"
+                    style="@style/text_size_med"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="17dp"
+                    android:duplicateParentState="true"
+                    android:text="Customer"
+                    android:textColor="@color/text_color" />
+
+
+        </LinearLayout>
+
+
+        <LinearLayout
+                android:id="@+id/home_stock"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_marginStart="7dp"
+                android:layout_weight="1"
+                android:background="@drawable/button_color_main_home_icon"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:visibility="invisible">
+
+            <ImageView
+                    android:id="@+id/home_stock_img"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:duplicateParentState="true"
+                    android:src="@drawable/main_home_item_detail" />
+
+            <TextView
+                    android:id="@+id/home_stock_txt"
+                    style="@style/text_size_med"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="17dp"
+                    android:duplicateParentState="true"
+                    android:text="Stock Detail"
+                    android:textColor="@color/text_color" />
+
+
+        </LinearLayout>
+
+
+    </LinearLayout>
+
+
+    <LinearLayout
+            android:id="@+id/cont2"
+            android:layout_width="match_parent"
+            android:layout_height="170dp"
+            android:layout_marginTop="7dp"
+            android:layout_marginBottom="7dp"
+            android:orientation="horizontal">
+
+        <LinearLayout
+                android:id="@+id/home_request"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_marginEnd="7dp"
+                android:layout_weight="1"
+                android:background="@drawable/button_color_main_home_icon"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:visibility="invisible">
+
+            <ImageView
+                    android:id="@+id/req_img"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:duplicateParentState="true"
+                    android:src="@drawable/main_home_item" />
+
+            <TextView
+                    android:id="@+id/home_request_txt"
+                    style="@style/text_size_med"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="17dp"
+                    android:duplicateParentState="true"
+                    android:text="Request Item"
+                    android:textColor="@color/text_color" />
+
+        </LinearLayout>
+
+
+        <LinearLayout
+                android:id="@+id/home_sync"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_marginStart="7dp"
+                android:layout_weight="1"
+                android:background="@drawable/button_color_main_home_icon"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:visibility="invisible">
+
+            <ImageView
+                    android:id="@+id/syn_img"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:duplicateParentState="true"
+                    android:src="@drawable/main_home_sync" />
+
+            <TextView
+                    android:id="@+id/home_sync_txt"
+                    style="@style/text_size_med"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="17dp"
+                    android:duplicateParentState="true"
+                    android:text="Sync Detail"
+                    android:textColor="@color/text_color" />
+
+        </LinearLayout>
+
+
+    </LinearLayout>
+
+
+</LinearLayout>

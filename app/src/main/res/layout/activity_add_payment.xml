@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/app_background"
+        android:orientation="vertical"
+        android:padding="18dp"
+        tools:context=".customer.payment.AddPayment">
+
+
+    <TextView
+            android:id="@+id/cust_payment_due_total"
+            style="@style/text_size_mid_l"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="20dp"
+            android:textColor="@color/text_color"
+            tools:text="" />
+
+    <LinearLayout
+            android:id="@+id/search_cont"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="15dp"
+            android:orientation="horizontal">
+
+        <EditText
+                android:id="@+id/sales_review_search"
+                style="@style/text_size_med"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@drawable/rounded_white2_editext"
+                android:drawableStart="@drawable/ic_search"
+                android:drawableEnd="@drawable/ic_filter"
+                android:drawablePadding="10dp"
+                android:hint="Search here"
+                android:maxLines="1"
+                android:paddingStart="18dp"
+                android:paddingTop="20dp"
+                android:paddingEnd="18dp"
+                android:paddingBottom="20dp"
+                android:textColor="@color/text_color" />
+
+        <ImageButton
+                android:id="@+id/sales_review_date_filter_button"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_marginStart="1dp"
+                android:background="@drawable/rounded_white2_button"
+                android:padding="18dp"
+                android:src="@drawable/ic_date_main" />
+
+    </LinearLayout>
+
+    <LinearLayout
+            android:id="@+id/empty_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:visibility="gone">
+
+        <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="70dp"
+                android:src="@drawable/ic_empty" />
+
+        <TextView
+                style="@style/text_size_med"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:text="List is empty"
+                android:textColor="@color/text_color" />
+
+    </LinearLayout>
+
+    <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/sales_review_recycler"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+</LinearLayout>

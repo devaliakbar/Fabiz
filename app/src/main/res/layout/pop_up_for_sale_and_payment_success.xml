@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_margin="20dp"
+        android:background="@drawable/rounded_dialogue_frame_white"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:padding="20dp">
+
+
+    <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="20dp"
+            android:gravity="center"
+            android:orientation="horizontal"
+            android:visibility="gone">
+
+        <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Date"
+                android:textStyle="bold" />
+
+        <TextView
+                android:id="@+id/pop_up_for_payment_date"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="2"
+                android:textSize="19sp"
+                android:textStyle="bold"
+                tools:text=": 29,Mon Sep 1997 02:15 AM" />
+
+    </LinearLayout>
+
+    <LinearLayout
+            android:id="@+id/pop_up_for_payment_bill_amt_cont"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="20dp"
+            android:gravity="center"
+            android:orientation="horizontal"
+            android:visibility="gone">
+
+        <TextView
+
+                style="@style/text_size_med"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Invoiced Amount"
+                android:textColor="@color/text_color"
+                android:textStyle="bold" />
+
+        <TextView
+                android:id="@+id/pop_up_for_payment_bill_amt"
+                style="@style/text_size_med"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="end"
+                android:textColor="@color/text_color"
+                android:textStyle="bold"
+                tools:text=": 4500.000" />
+
+    </LinearLayout>
+
+
+    <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="20dp"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+        <TextView
+                android:id="@+id/pop_up_for_payment_due_label"
+                style="@style/text_size_med"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Due Amount"
+                android:textColor="@color/text_color"
+                android:textStyle="bold" />
+
+        <TextView
+                android:id="@+id/pop_up_for_payment_due"
+                style="@style/text_size_med"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="end"
+                android:textColor="@color/text_color"
+                android:textStyle="bold"
+                tools:text=": 5500.000" />
+
+    </LinearLayout>
+
+
+    <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="20dp"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+        <TextView
+                android:id="@+id/pop_up_for_payment_label_ent_amt"
+                style="@style/text_size_med"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Paid Amount"
+                android:textColor="@color/text_color"
+                android:textStyle="bold" />
+
+        <TextView
+                android:id="@+id/pop_up_for_payment_ent_amt"
+                style="@style/text_size_med"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="end"
+                android:textColor="@color/text_color"
+                android:textStyle="bold"
+                tools:text=": 4500.000" />
+
+    </LinearLayout>
+
+
+    <LinearLayout
+            android:id="@+id/pop_up_for_payment_due_cont"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="20dp"
+            android:gravity="center"
+            android:orientation="horizontal"
+            android:visibility="gone">
+
+        <TextView
+                style="@style/text_size_med"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Total Due Amount"
+                android:textColor="@color/text_color"
+                android:textStyle="bold" />
+
+        <TextView
+                android:id="@+id/pop_up_for_payment_due_tot"
+                style="@style/text_size_med"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="end"
+                android:textColor="@color/text_color"
+                android:textStyle="bold"
+                tools:text=": 5500.000" />
+
+    </LinearLayout>
+
+
+    <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+        <Button
+                android:id="@+id/pop_up_for_payment_okay"
+                style="@style/text_size_med"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="5dp"
+                android:layout_weight="1"
+                android:background="@drawable/button_color_gradient"
+                android:text="Save"
+                android:textAllCaps="false"
+                android:textColor="@color/pure_white" />
+
+        <Button
+                android:id="@+id/pop_up_for_payment_add_pay"
+                style="@style/text_size_med"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="5dp"
+                android:layout_weight="1"
+                android:background="@drawable/button_color_gradient"
+                android:text="Pay Due "
+                android:textAllCaps="false"
+                android:textColor="@color/pure_white"
+                android:visibility="gone" />
+
+    </LinearLayout>
+
+
+</LinearLayout>

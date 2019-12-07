@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+        package="com.officialakbarali.fabiz">
+
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.CAMERA" />
+
+    <uses-feature android:name="android.hardware.camera" />
+    <uses-feature android:name="android.hardware.camera.autofocus" />
+
+    <application
+            android:name=".network.syncInfo.NotificationFrame"
+            android:allowBackup="true"
+            android:icon="@mipmap/app_logo"
+            android:label="@string/app_name"
+            android:networkSecurityConfig="@xml/network_security_config"
+            android:roundIcon="@mipmap/app_logo_circle"
+            android:supportsRtl="true"
+            android:theme="@style/AppTheme">
+        <activity
+                android:name=".requestStock.RequestItem"
+                android:screenOrientation="portrait"></activity>
+        <activity
+                android:name=".Settings"
+                android:screenOrientation="portrait" />
+        <activity
+                android:name=".blockPages.UpdateData"
+                android:screenOrientation="portrait" />
+        <activity
+                android:name=".blockPages.ForcePull"
+                android:screenOrientation="portrait" />
+        <activity
+                android:name=".blockPages.AppVersion"
+                android:screenOrientation="portrait" />
+        <activity
+                android:name=".MainHome"
+                android:screenOrientation="portrait" />
+        <activity
+                android:name=".LogIn"
+                android:screenOrientation="portrait" />
+        <activity
+                android:name=".customer.route.RouteModify"
+                android:screenOrientation="portrait" />
+        <activity
+                android:name=".requestStock.RequestStock"
+                android:screenOrientation="portrait" />
+        <activity
+                android:name=".data.barcode.FabizBarcode"
+                android:screenOrientation="portrait" />
+        <activity
+                android:name=".customer.route.ManageRoute"
+                android:screenOrientation="portrait" />
+        <activity
+                android:name=".network.syncInfo.SyncInformation"
+                android:screenOrientation="portrait" />
+        <activity
+                android:name=".customer.payment.PaymentReview"
+                android:screenOrientation="portrait" />
+        <activity
+                android:name=".customer.payment.AddPayment"
+                android:screenOrientation="portrait" />
+        <activity
+                android:name=".customer.sale.SalesReturnReview"
+                android:screenOrientation="portrait" />
+        <activity
+                android:name=".customer.sale.SalesReviewDetail"
+                android:screenOrientation="portrait" />
+        <activity
+                android:name=".customer.sale.SalesReview"
+                android:screenOrientation="portrait" />
+        <activity
+                android:name=".network.syncInfo.OLD.SyncFromAppToServer"
+                android:screenOrientation="portrait" />
+        <activity
+                android:name=".customer.sale.Sales"
+                android:screenOrientation="portrait" />
+        <activity
+                android:name=".customer.Home"
+                android:screenOrientation="portrait" />
+        <activity
+                android:name=".item.Item"
+                android:screenOrientation="portrait" />
+        <activity
+                android:name=".customer.AddCustomer"
+                android:screenOrientation="portrait" />
+        <activity
+                android:name=".customer.Customer"
+                android:screenOrientation="portrait" />
+        <activity
+                android:name=".MainActivity"
+                android:screenOrientation="portrait">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <receiver android:name=".network.syncInfo.services.NetworkMonitor">
+            <intent-filter>
+                <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
+            </intent-filter>
+        </receiver>
+
+        <service
+                android:name=".network.syncInfo.services.SyncService"
+                android:enabled="true" />
+        <service
+                android:name=".network.syncInfo.services.ForcePullService"
+                android:enabled="true" />
+    </application>
+
+</manifest>

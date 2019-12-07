@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/customer_home_item"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="15dp"
+        android:background="@drawable/button_color_main_home_icon"
+        android:padding="18dp">
+
+
+    <TextView
+            android:id="@+id/phone"
+            style="@style/text_size_small"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:drawableStart="@drawable/ic_phone"
+            android:drawablePadding="7dp"
+            tools:text="PHONE" />
+
+
+    <TextView
+            android:id="@+id/name"
+            style="@style/text_size_med"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/text_color"
+            tools:text="NAME" />
+
+
+    <TextView
+            android:id="@+id/id"
+            style="@style/text_size_small"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/name"
+            android:layout_marginTop="18dp"
+            tools:text="ID" />
+
+
+    <TextView
+            android:id="@+id/email"
+            style="@style/text_size_small"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/id"
+            android:layout_marginTop="18dp"
+            tools:text="EMAIL" />
+
+
+    <TextView
+            android:id="@+id/address"
+            style="@style/text_size_small"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/email"
+            android:layout_marginTop="18dp"
+            tools:text="ADDRESS" />
+
+    <ImageButton
+            android:id="@+id/remove_or_add"
+            android:layout_width="35dp"
+            android:layout_height="35dp"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:background="@drawable/button_circle"
+            android:src="@drawable/ic_select"
+            android:text="Select"
+            android:textAllCaps="false" />
+
+</RelativeLayout>

@@ -1,0 +1,284 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/main_parent"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="15dp"
+        android:background="@drawable/button_color_main_home_icon"
+        android:orientation="vertical"
+        android:padding="18dp">
+
+    <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+
+        <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+            <TextView
+                    android:id="@+id/sales_review_view_bill_id"
+                    style="@style/text_size_med"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="10dp"
+                    android:textColor="@color/text_color"
+                    tools:text="Bill Id :14" />
+
+            <TextView
+                    android:id="@+id/sales_review_view_date"
+                    style="@style/text_size_med"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/text_color"
+                    tools:text="Date :20" />
+
+        </LinearLayout>
+
+
+        <ImageButton
+                android:id="@+id/sales_review_view_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/button_item_remove_pure_white"
+                android:padding="15dp"
+                android:src="@drawable/ic_select_blue_main"
+                android:text="View" />
+
+    </LinearLayout>
+
+
+    <View
+            android:layout_width="match_parent"
+            android:layout_height="0.7dp"
+            android:layout_marginBottom="10dp"
+            android:background="@color/grey_border_color" />
+
+
+    <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
+            android:orientation="horizontal">
+
+
+        <TextView
+                style="@style/text_size_med"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Total Item"
+                android:textColor="@color/text_color" />
+
+        <TextView
+                android:id="@+id/sales_review_view_tot_items"
+                style="@style/text_size_med"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="end"
+                android:textColor="@color/text_color"
+                android:textStyle="bold"
+                tools:text="Total Item" />
+
+    </LinearLayout>
+
+    <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+        <TextView
+                style="@style/text_size_med"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Total"
+                android:textColor="@color/text_color" />
+
+        <TextView
+                android:id="@+id/sales_review_view_total"
+                style="@style/text_size_med"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="end"
+                android:textColor="@color/text_color"
+                android:textStyle="bold"
+                tools:text="Total Item" />
+
+    </LinearLayout>
+
+
+    <LinearLayout
+            android:id="@+id/return_cont"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:orientation="horizontal"
+            android:visibility="gone">
+
+
+        <TextView
+                style="@style/text_size_med"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Return Amount"
+                android:textColor="@color/text_color" />
+
+        <TextView
+                android:id="@+id/sales_review_view_return_total"
+                style="@style/text_size_med"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="end"
+                android:textColor="@color/text_color"
+                android:textStyle="bold"
+                tools:text="Total Item" />
+
+    </LinearLayout>
+
+
+    <LinearLayout
+            android:id="@+id/disc_cont"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:orientation="horizontal"
+            android:visibility="gone">
+
+
+        <TextView
+                style="@style/text_size_med"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Due Discount Amount"
+                android:textColor="@color/text_color" />
+
+        <TextView
+                android:id="@+id/sales_review_view_discount"
+                style="@style/text_size_med"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="end"
+                android:textColor="@color/text_color"
+                android:textStyle="bold"
+                tools:text="Total Item" />
+
+    </LinearLayout>
+
+    <LinearLayout
+            android:id="@+id/current_cont"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:orientation="horizontal"
+            android:visibility="gone">
+
+
+        <TextView
+                style="@style/text_size_med"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Current Amount"
+                android:textColor="@color/text_color" />
+
+        <TextView
+                android:id="@+id/sales_review_view_current_total"
+                style="@style/text_size_med"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="end"
+                android:textColor="@color/text_color"
+                android:textStyle="bold"
+                tools:text="Total Item" />
+
+    </LinearLayout>
+
+    <LinearLayout
+            android:id="@+id/paid_cont"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:orientation="horizontal"
+            android:visibility="gone">
+
+
+        <TextView
+                style="@style/text_size_med"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Paid Amount"
+                android:textColor="@color/text_color" />
+
+        <TextView
+                android:id="@+id/sales_review_view_paid"
+                style="@style/text_size_med"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="end"
+                android:textColor="@color/text_color"
+                android:textStyle="bold"
+                tools:text="Total Item" />
+
+    </LinearLayout>
+
+    <LinearLayout
+            android:id="@+id/due_cont"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:orientation="horizontal"
+            android:visibility="gone">
+
+
+        <TextView
+                style="@style/text_size_med"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Due Amount"
+                android:textColor="@color/text_color" />
+
+        <TextView
+                android:id="@+id/sales_review_due"
+                style="@style/text_size_med"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="end"
+                android:textColor="@color/text_color"
+                android:textStyle="bold"
+                tools:text="Total Item" />
+
+    </LinearLayout>
+
+    <Button
+            android:id="@+id/pay_btn"
+            style="@style/text_size_med"
+            android:layout_width="match_parent"
+            android:layout_height="57dp"
+            android:layout_marginTop="20dp"
+            android:background="@drawable/button_color_gradient"
+            android:text="Pay this bill"
+            android:textAllCaps="false"
+            android:textColor="@color/pure_white"
+            android:visibility="gone" />
+
+
+</LinearLayout>

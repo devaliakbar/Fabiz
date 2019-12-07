@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/app_background"
+        android:padding="18dp"
+        tools:context=".blockPages.ForcePull">
+
+    <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+
+        <TextView
+                style="@style/text_size_large"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Pull From Server"
+                android:textColor="@color/text_color" />
+
+
+        <TextView
+                android:id="@+id/txt_msg"
+                style="@style/text_size_med"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Please fetch data from server to continue"
+                android:textColor="@color/text_color" />
+
+    </LinearLayout>
+
+
+    <pl.droidsonroids.gif.GifImageView
+            android:id="@+id/loading"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:src="@drawable/loading1"
+            android:visibility="gone" />
+
+    <ImageView
+            android:id="@+id/nImage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:src="@drawable/ic_sync" />
+
+
+    <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_marginStart="18dp"
+            android:layout_marginEnd="18dp"
+            android:layout_marginBottom="30dp"
+            android:orientation="vertical">
+
+        <Button
+                android:id="@+id/pull_btn"
+                style="@style/text_size_med"
+                android:layout_width="match_parent"
+                android:layout_height="61dp"
+                android:layout_marginBottom="15dp"
+                android:background="@drawable/button_color_gradient"
+                android:text="Pull From Server"
+                android:textAllCaps="false"
+                android:textColor="@color/pure_white" />
+
+
+        <Button
+                android:id="@+id/log_out"
+                style="@style/text_size_med"
+                android:layout_width="match_parent"
+                android:layout_height="61dp"
+                android:background="@drawable/button_color_gradient"
+                android:text="Log Out"
+                android:textAllCaps="false"
+                android:textColor="@color/pure_white" />
+
+
+    </LinearLayout>
+
+
+</RelativeLayout>

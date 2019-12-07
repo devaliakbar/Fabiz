@@ -1,0 +1,231 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_margin="20dp"
+        android:background="@drawable/rounded_dialogue_frame_white"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:padding="20dp">
+
+    <TextView
+            android:id="@+id/cust_sale_add_item_label_pop"
+            style="@style/text_size_mid_l"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="20dp"
+            android:text="Enter Quantity"
+            android:textColor="@color/text_color"
+            android:textStyle="bold" />
+
+
+    <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
+            android:orientation="horizontal">
+
+        <TextView
+                style="@style/text_size_med"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Unit"
+                android:textColor="@color/text_color"
+                android:textStyle="bold" />
+
+        <Spinner
+                android:id="@+id/spinner_unit"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:backgroundTint="@color/text_color"
+                android:spinnerMode="dropdown" />
+
+    </LinearLayout>
+
+
+    <LinearLayout
+            android:id="@+id/cust_sale_add_item_cont_price_pop"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
+            android:orientation="horizontal">
+
+
+        <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@drawable/rounded_border_grey_left">
+
+            <TextView
+                    android:paddingStart="20dp"
+                    android:textAlignment="textStart"
+                    style="@style/text_size_med"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginStart="1dp"
+                    android:layout_marginTop="1dp"
+                    android:layout_marginEnd="0.5dp"
+                    android:layout_marginBottom="1dp"
+                    android:background="@drawable/rounded_border_pop_left"
+                    android:gravity="center"
+                    android:text="Price"
+                    android:textColor="@color/text_color"
+                    android:textStyle="bold" />
+
+        </LinearLayout>
+
+
+        <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@drawable/rounded_border_grey_right">
+
+            <EditText
+                    android:id="@+id/cust_sale_add_item_price"
+                    style="@style/text_size_med"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="0.5dp"
+                    android:layout_marginTop="1dp"
+                    android:layout_marginEnd="1dp"
+                    android:layout_marginBottom="1dp"
+                    android:background="@drawable/rounded_border_pop_right"
+                    android:inputType="numberDecimal"
+                    android:padding="20dp"
+                    android:textColor="@color/text_color"
+                    android:textStyle="bold"
+                    tools:text="250" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
+            android:orientation="horizontal">
+
+        <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@drawable/rounded_border_grey_left">
+
+
+            <TextView
+                    android:paddingStart="20dp"
+                    android:textAlignment="textStart"
+                    style="@style/text_size_med"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginStart="1dp"
+                    android:layout_marginTop="1dp"
+                    android:layout_marginEnd="0.5dp"
+                    android:layout_marginBottom="1dp"
+                    android:background="@drawable/rounded_border_pop_left"
+                    android:gravity="center"
+                    android:text="Enter Quantity"
+                    android:textColor="@color/text_color"
+                    android:textStyle="bold" />
+
+        </LinearLayout>
+
+
+        <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@drawable/rounded_border_grey_right">
+
+        <EditText
+                android:id="@+id/cust_sale_add_item_qty"
+                style="@style/text_size_med"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="0.5dp"
+                android:layout_marginTop="1dp"
+                android:layout_marginEnd="1dp"
+                android:layout_marginBottom="1dp"
+                android:background="@drawable/rounded_border_pop_right"
+                android:inputType="number"
+                android:padding="20dp"
+                android:textColor="@color/text_color"
+                android:textStyle="bold"
+                tools:text="2" />
+
+    </LinearLayout>
+    </LinearLayout>
+
+    <LinearLayout
+            android:id="@+id/cust_sale_add_item_cont_total_pop"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
+            android:orientation="horizontal">
+
+        <TextView
+                android:textAlignment="textStart"
+                style="@style/text_size_med"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Total"
+                android:gravity="center"
+                android:textColor="@color/text_color"
+                android:textStyle="bold" />
+
+        <TextView
+                android:id="@+id/cust_sale_add_item_total"
+                style="@style/text_size_med"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:padding="20dp"
+                android:textColor="@color/text_color"
+                android:textStyle="bold"
+                tools:text="500" />
+
+    </LinearLayout>
+
+
+    <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:orientation="horizontal">
+
+        <Button
+                android:id="@+id/cust_sale_add_item_add"
+                style="@style/text_size_med"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="5dp"
+                android:layout_weight="1"
+                android:background="@drawable/button_color_gradient"
+                android:text="Add"
+                android:textAllCaps="false"
+                android:textColor="@color/pure_white" />
+
+        <Button
+                android:id="@+id/cust_sale_add_item_cancel"
+                style="@style/text_size_med"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="5dp"
+                android:layout_weight="1"
+                android:background="@drawable/button_color_gradient"
+                android:text="Cancel"
+                android:textAllCaps="false"
+                android:textColor="@color/pure_white"
+                android:visibility="visible" />
+
+    </LinearLayout>
+
+
+</LinearLayout>

@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/app_background"
+        android:orientation="vertical"
+        android:padding="18dp"
+        tools:context=".customer.route.ManageRoute">
+
+    <TextView
+            android:id="@+id/route_head"
+            style="@style/text_size_large"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="Manage Routes"
+            android:textColor="@color/text_color"
+            android:visibility="invisible" />
+
+    <TextView
+            android:id="@+id/route_below_head"
+            style="@style/text_size_med"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="Manage your daily routes"
+            android:textColor="@color/text_color"
+            android:visibility="invisible" />
+
+
+    <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="90dp"
+            android:layout_marginTop="40dp"
+            android:orientation="horizontal">
+
+
+        <Button
+                android:id="@+id/mon"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_marginEnd="20dp"
+                android:layout_weight="1"
+                android:background="@drawable/button_color_main_home_icon"
+                android:onClick="monday"
+                android:text="Monday"
+                android:textAllCaps="false"
+                android:textColor="@color/text_color"
+                android:visibility="invisible" />
+
+        <Button
+                android:id="@+id/tue"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_marginEnd="20dp"
+                android:layout_weight="1"
+                android:background="@drawable/button_color_main_home_icon"
+                android:onClick="tuesday"
+                android:text="Tuesday"
+                android:textAllCaps="false"
+                android:textColor="@color/text_color"
+                android:visibility="invisible" />
+
+        <Button
+                android:id="@+id/wed"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@drawable/button_color_main_home_icon"
+                android:onClick="wednesday"
+                android:text="Wednesday"
+                android:textAllCaps="false"
+                android:textColor="@color/text_color"
+                android:visibility="invisible" />
+
+
+    </LinearLayout>
+
+    <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="90dp"
+            android:layout_marginTop="20dp"
+            android:orientation="horizontal">
+
+
+        <Button
+                android:id="@+id/thu"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_marginEnd="20dp"
+                android:layout_weight="1"
+                android:background="@drawable/button_color_main_home_icon"
+                android:onClick="thursday"
+                android:text="Thursday"
+                android:textAllCaps="false"
+                android:textColor="@color/text_color"
+                android:visibility="invisible" />
+
+        <Button
+                android:id="@+id/fri"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_marginEnd="20dp"
+                android:layout_weight="1"
+                android:background="@drawable/button_color_main_home_icon"
+                android:onClick="friday"
+                android:text="Friday"
+                android:textAllCaps="false"
+                android:textColor="@color/text_color"
+                android:visibility="invisible" />
+
+        <Button
+                android:id="@+id/sat"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@drawable/button_color_main_home_icon"
+                android:onClick="saturday"
+                android:text="Saturday"
+                android:textAllCaps="false"
+                android:textColor="@color/text_color"
+                android:visibility="invisible" />
+
+
+    </LinearLayout>
+
+    <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="90dp"
+            android:layout_marginTop="20dp"
+            android:orientation="horizontal">
+
+
+        <ImageButton
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_marginEnd="20dp"
+                android:layout_weight="1"
+                android:background="@drawable/button_color_main_home_icon"
+                android:visibility="invisible" />
+
+        <Button
+                android:id="@+id/sun"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_marginEnd="20dp"
+                android:layout_weight="1"
+                android:background="@drawable/button_color_main_home_icon"
+                android:onClick="sunday"
+                android:text="Sunday"
+                android:textAllCaps="false"
+                android:textColor="@color/text_color"
+                android:visibility="invisible" />
+
+        <ImageButton
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@drawable/button_color_main_home_icon"
+                android:visibility="invisible" />
+
+
+    </LinearLayout>
+
+
+</LinearLayout>

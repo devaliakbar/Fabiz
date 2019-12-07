@@ -1,0 +1,298 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/app_background"
+        android:orientation="vertical"
+        android:padding="18dp"
+        tools:context=".customer.AddCustomer">
+
+
+    <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+
+        <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+            <TextView
+                    android:id="@+id/cust_add_head"
+                    style="@style/text_size_large"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:text="Add Customer"
+                    android:textColor="@color/text_color"
+                    android:visibility="visible" />
+
+            <TextView
+                    android:id="@+id/cust_add_below_head"
+                    style="@style/text_size_med"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:text="Add New Customer"
+                    android:textColor="@color/text_color"
+                    android:visibility="visible" />
+        </LinearLayout>
+
+
+        <LinearLayout
+                android:id="@+id/cust_add_prefix_cont"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:visibility="visible">
+
+            <TextView
+                    style="@style/text_size_small"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Prefix   "
+                    android:textColor="@color/text_color" />
+
+            <EditText
+                    android:id="@+id/cust_add_prefix"
+                    style="@style/text_size_small"
+                    android:layout_width="66dp"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/rounded_white_editext"
+                    android:gravity="center"
+                    android:inputType="textCapCharacters"
+                    android:maxLines="1"
+                    android:padding="15dp"
+                    android:textColor="@color/text_color" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+
+    <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_marginTop="20dp"
+            android:layout_marginBottom="20dp"
+            android:layout_weight="1">
+
+        <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+            <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/shopc"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/cust_add_shop_name"
+                        style="@style/text_size_med"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="20dp"
+                        android:background="@drawable/rounded_white_editext"
+                        android:hint="Enter Shop Name"
+                        android:inputType="text"
+                        android:maxLines="1"
+                        android:padding="20dp"
+                        android:textColor="@color/text_color"
+                        android:visibility="visible" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+
+            <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/phonec"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/cust_add_phone"
+                        style="@style/text_size_med"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="20dp"
+                        android:background="@drawable/rounded_white_editext"
+                        android:hint="Enter Phone"
+                        android:inputType="phone"
+                        android:maxLines="1"
+                        android:padding="20dp"
+                        android:textColor="@color/text_color"
+                        android:visibility="visible" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+
+            <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/namec"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/cust_add_name"
+                        style="@style/text_size_med"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="20dp"
+                        android:background="@drawable/rounded_white_editext"
+                        android:hint="Enter Contact Person Name"
+                        android:inputType="text"
+                        android:maxLines="1"
+                        android:padding="20dp"
+                        android:textColor="@color/text_color"
+                        android:visibility="visible" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+
+            <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/addc"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/cust_add_address"
+                        style="@style/text_size_med"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="20dp"
+                        android:background="@drawable/rounded_white_editext"
+                        android:hint="Enter Address"
+                        android:inputType="text"
+                        android:maxLines="1"
+                        android:padding="20dp"
+                        android:textColor="@color/text_color"
+                        android:visibility="visible" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/telec"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/cust_add_telephone"
+                        style="@style/text_size_med"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="20dp"
+                        android:background="@drawable/rounded_white_editext"
+                        android:hint="Enter Telephone"
+                        android:inputType="phone"
+                        android:maxLines="1"
+                        android:padding="20dp"
+                        android:textColor="@color/text_color"
+                        android:visibility="visible" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+
+            <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/emailc"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/cust_add_email"
+                        style="@style/text_size_med"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="20dp"
+                        android:background="@drawable/rounded_white_editext"
+                        android:hint="Enter Email"
+                        android:inputType="textEmailAddress"
+                        android:maxLines="1"
+                        android:padding="20dp"
+                        android:textColor="@color/text_color"
+                        android:visibility="visible" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+
+            <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/crc"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/cust_add_cr"
+                        style="@style/text_size_med"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="20dp"
+                        android:background="@drawable/rounded_white_editext"
+                        android:hint="Enter CR Number"
+                        android:inputType="text"
+                        android:maxLines="1"
+                        android:padding="20dp"
+                        android:textColor="@color/text_color"
+                        android:visibility="visible" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+
+            <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/vatc"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/cust_add_vat_no"
+                        style="@style/text_size_med"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/rounded_white_editext"
+                        android:hint="Enter Vat Number"
+                        android:inputType="text"
+                        android:maxLines="1"
+                        android:padding="20dp"
+                        android:textColor="@color/text_color"
+                        android:visibility="visible" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+
+        </LinearLayout>
+
+    </ScrollView>
+
+
+    <LinearLayout
+            android:id="@+id/cust_add_day_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="20dp"
+            android:orientation="horizontal"
+            android:visibility="visible">
+
+        <TextView
+                style="@style/text_size_med"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Route"
+                android:textColor="@color/text_color" />
+
+        <Spinner
+                android:id="@+id/cust_add_day_list"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:entries="@array/day_list"
+                android:spinnerMode="dropdown" />
+
+    </LinearLayout>
+
+    <Button
+            android:id="@+id/cust_add_save"
+            style="@style/text_size_med"
+            android:layout_width="match_parent"
+            android:layout_height="61dp"
+            android:background="@drawable/button_color_gradient"
+            android:text="Add Customer"
+            android:textColor="@color/pure_white"
+            android:visibility="visible" />
+
+</LinearLayout>

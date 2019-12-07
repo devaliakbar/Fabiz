@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/main_parent"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="15dp"
+        android:background="@drawable/button_color_main_home_icon"
+        android:orientation="vertical"
+        android:padding="18dp">
+
+
+    <TextView
+            android:id="@+id/payment_review_item_date"
+            style="@style/text_size_med"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
+            android:textColor="@color/text_color"
+            tools:text="29, June 1997 9 : 25 AM" />
+
+    <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
+            android:orientation="horizontal">
+
+
+        <TextView
+                style="@style/text_size_med"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Payment Id"
+                android:textColor="@color/text_color" />
+
+        <TextView
+                android:id="@+id/payment_review_item_id"
+                style="@style/text_size_med"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="end"
+                android:textColor="@color/text_color"
+                android:textStyle="bold"
+                tools:text="545" />
+
+    </LinearLayout>
+
+    <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
+            android:orientation="horizontal">
+
+
+        <TextView
+                style="@style/text_size_med"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Paid Bill Id"
+                android:textColor="@color/text_color" />
+
+        <TextView
+                android:id="@+id/payment_review_item_billid"
+                style="@style/text_size_med"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="end"
+                android:textColor="@color/text_color"
+                android:textStyle="bold"
+                tools:text="545" />
+
+    </LinearLayout>
+
+    <View
+            android:layout_width="match_parent"
+            android:layout_height="0.7dp"
+            android:layout_marginBottom="10dp"
+            android:background="@color/grey_border_color" />
+
+    <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+
+        <TextView
+                style="@style/text_size_med"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Amount"
+                android:textColor="@color/text_color" />
+
+        <TextView
+                android:id="@+id/payment_review_item_amt"
+                style="@style/text_size_med"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="end"
+                android:textColor="@color/text_color"
+                android:textStyle="bold"
+                tools:text="545" />
+
+    </LinearLayout>
+
+
+</LinearLayout>

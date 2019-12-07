@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/pure_white"
+        tools:context=".blockPages.AppVersion">
+
+
+    <ImageView
+            android:id="@+id/img"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:scaleType="centerCrop"
+            android:src="@drawable/update_app" />
+
+
+    <TextView
+            style="@style/text_size_large"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/img"
+            android:layout_centerInParent="true"
+            android:text="Update your App"
+            android:textColor="@color/text_color" />
+
+
+    <Button
+            android:id="@+id/update_now"
+            style="@style/text_size_med"
+            android:layout_width="match_parent"
+            android:layout_height="61dp"
+            android:layout_alignParentBottom="true"
+            android:layout_marginStart="18dp"
+            android:layout_marginEnd="18dp"
+            android:layout_marginBottom="30dp"
+            android:background="@drawable/button_color_gradient"
+            android:text="Update Now"
+            android:textColor="@color/pure_white" />
+</RelativeLayout>

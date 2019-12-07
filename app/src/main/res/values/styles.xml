@@ -1,0 +1,28 @@
+<resources>
+
+    <!-- Base application theme. -->
+    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/app_background</item>
+        <item name="colorAccent">@color/colorAccent</item>
+    </style>
+
+    <style name="text_size_large">
+        <item name="android:textSize">39sp</item>
+    </style>
+
+    <style name="text_size_med">
+        <item name="android:textSize">17sp</item>
+    </style>
+
+    <style name="text_size_small">
+        <item name="android:textSize">13sp</item>
+    </style>
+
+    <style name="text_size_mid_l">
+        <item name="android:textSize">19sp</item>
+    </style>
+
+
+</resources>
