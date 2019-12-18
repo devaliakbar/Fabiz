@@ -6,6 +6,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.animation.Animator;
 import android.app.Dialog;
+import android.bluetooth.BluetoothSocket;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.database.Cursor;
@@ -27,9 +28,12 @@ import com.officialakbarali.fabiz.CommonResumeCheck;
 import com.officialakbarali.fabiz.R;
 import com.officialakbarali.fabiz.data.db.FabizContract;
 import com.officialakbarali.fabiz.data.db.FabizProvider;
+import com.officialakbarali.fabiz.printer.BPrinter;
+import com.officialakbarali.fabiz.printer.DeviceList;
 import com.officialakbarali.fabiz.requestStock.adapter.RequestStockAdapter;
 import com.officialakbarali.fabiz.requestStock.data.RequestItem;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -39,6 +43,8 @@ public class RequestStock extends AppCompatActivity implements RequestStockAdapt
 
     private RequestStockAdapter adapter;
     RecyclerView recyclerView;
+
+    private BluetoothSocket btsocket;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,6 +57,24 @@ public class RequestStock extends AppCompatActivity implements RequestStockAdapt
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setHasFixedSize(true);
         recyclerView.setAdapter(adapter);
+
+        ImageButton printItemBtn = findViewById(R.id.request_stock_print);
+        printItemBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (itemsForRequest.size() > 0) {
+                    if (btsocket == null) {
+                        Intent BTIntent = new Intent(getApplicationContext(), DeviceList.class);
+                        RequestStock.this.startActivityForResult(BTIntent, DeviceList.REQUEST_CONNECT_BT);
+                    } else {
+                        BPrinter printer = new BPrinter(btsocket,RequestStock.this);
+                        printer.printRequestItems(itemsForRequest);
+                    }
+                } else {
+                    showToast("List is empty");
+                }
+            }
+        });
 
         ImageButton clearBtn = findViewById(R.id.clear_all);
         clearBtn.setOnClickListener(new View.OnClickListener() {
@@ -94,7 +118,6 @@ public class RequestStock extends AppCompatActivity implements RequestStockAdapt
         super.onResume();
         new CommonResumeCheck(this);
         setUpAnimation();
-
     }
 
     @Override
@@ -121,13 +144,44 @@ public class RequestStock extends AppCompatActivity implements RequestStockAdapt
 
             provider.insert(FabizContract.RequestItem.TABLE_NAME, values);
         }
+
+        try {
+            if (btsocket != null) {
+                btsocket.close();
+                btsocket = null;
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
-    private void showToast() {
+    @Override
+    public void finish() {
+        super.finish();
+        overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        hideAll();
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        try {
+            btsocket = DeviceList.getSocket();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void showToast(String msg) {
         if (toast != null) {
             toast.cancel();
         }
-        toast = Toast.makeText(this, "Some fields are empty", Toast.LENGTH_LONG);
+        toast = Toast.makeText(this, msg, Toast.LENGTH_LONG);
         toast.show();
     }
 
@@ -150,11 +204,11 @@ public class RequestStock extends AppCompatActivity implements RequestStockAdapt
         addButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String nameS = nameText.getText().toString().trim();
+                String nameS = nameText.getText().toString().trim().toUpperCase();
                 String qtyS = quantityText.getText().toString().trim();
 
                 if (nameS.matches("") || qtyS.matches("")) {
-                    showToast();
+                    showToast("Some fields are empty");
                 } else {
                     itemsForRequest.add(new RequestItem(nameS, qtyS));
                     adapter.swapAdapter(itemsForRequest);
@@ -177,18 +231,6 @@ public class RequestStock extends AppCompatActivity implements RequestStockAdapt
             }
         });
         dialog.show();
-    }
-
-    @Override
-    public void finish() {
-        super.finish();
-        overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-        hideAll();
     }
 
     private void hideAll() {

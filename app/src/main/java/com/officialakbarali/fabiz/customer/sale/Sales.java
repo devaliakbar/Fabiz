@@ -8,10 +8,12 @@ import android.animation.Animator;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.app.TimePickerDialog;
+import android.bluetooth.BluetoothSocket;
 import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.Cursor;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
@@ -46,7 +48,10 @@ import com.officialakbarali.fabiz.customer.sale.data.Cart;
 import com.officialakbarali.fabiz.data.db.FabizContract;
 import com.officialakbarali.fabiz.data.db.FabizProvider;
 import com.officialakbarali.fabiz.item.Item;
+import com.officialakbarali.fabiz.printer.BPrinter;
+import com.officialakbarali.fabiz.printer.DeviceList;
 
+import java.io.IOException;
 import java.math.BigInteger;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -85,10 +90,10 @@ public class Sales extends AppCompatActivity implements SalesAdapter.SalesAdapte
 
     EditText amtEditText;
 
-    Intent addPaymentIntent = null;
     RecyclerView recyclerView;
 
     ImageButton addItemButton, showBarCoder, saveButton;
+    String idToInsertBill;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -218,11 +223,15 @@ public class Sales extends AppCompatActivity implements SalesAdapter.SalesAdapte
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if (addPaymentIntent != null) {
-            addPaymentIntent.putExtra("id", custId + "");
-            startActivity(addPaymentIntent);
-            overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+        try {
+            if (btsocket != null) {
+                btsocket.close();
+                btsocket = null;
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
         }
+        overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
     }
 
     @Override
@@ -323,7 +332,7 @@ public class Sales extends AppCompatActivity implements SalesAdapter.SalesAdapte
         editor.putString("sales_prefix", prefix);
         editor.apply();
 
-        String idToInsertBill = provider.getIdForInsert(FabizContract.BillDetail.TABLE_NAME, prefix);
+        idToInsertBill = provider.getIdForInsert(FabizContract.BillDetail.TABLE_NAME, prefix);
         if (idToInsertBill.matches("-1")) {
             showToast("Maximum limit of offline mode reached,please contact customer support");
             return;
@@ -447,7 +456,7 @@ public class Sales extends AppCompatActivity implements SalesAdapter.SalesAdapte
         }
     }
 
-    private void showDialogueInfo(double billAmt, double entAmt) {
+    private void showDialogueInfo(final double billAmt, final double entAmt) {
         double dueAmt = billAmt - entAmt;
         final Dialog dialog = new Dialog(this);
         dialog.setContentView(R.layout.pop_up_for_sale_and_payment_success);
@@ -466,14 +475,32 @@ public class Sales extends AppCompatActivity implements SalesAdapter.SalesAdapte
         //*************
 
 
-        Button okayButton = dialog.findViewById(R.id.pop_up_for_payment_okay);
-        okayButton.setOnClickListener(new View.OnClickListener() {
+        Button printButton = dialog.findViewById(R.id.pop_up_for_payment_okay);
+        printButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                dialog.dismiss();
+                if (btsocket == null) {
+                    Intent BTIntent = new Intent(getApplicationContext(), DeviceList.class);
+                    startActivityForResult(BTIntent, DeviceList.REQUEST_CONNECT_BT);
+                } else {
+                    BPrinter printer = new BPrinter(btsocket, Sales.this);
+                    FabizProvider provider = new FabizProvider(Sales.this, false);
+                    Cursor cursor = provider.query(FabizContract.Customer.TABLE_NAME, new String[]{FabizContract.Customer.COLUMN_NAME,
+                                    FabizContract.Customer.COLUMN_VAT_NO, FabizContract.Customer.COLUMN_ADDRESS},
+                            FabizContract.Customer._ID + "=?", new String[]{custId}, null);
+                    if (cursor.moveToNext()) {
+                        printer.printInvoice(idToInsertBill, currentTime, cartItems, billAmt + "", entAmt + "",
+                                cursor.getString(cursor.getColumnIndex(FabizContract.Customer.COLUMN_NAME)), cursor.getString(cursor.getColumnIndex(FabizContract.Customer.COLUMN_ADDRESS)),
+                                cursor.getString(cursor.getColumnIndex(FabizContract.Customer.COLUMN_VAT_NO)));
+                    } else {
+                        showToast("Something went wrong");
+                    }
+
+                    dialog.dismiss();
+                }
             }
         });
-        okayButton.setText("Done");
+        printButton.setText("Print");
 
         final LinearLayout billAmntContainer = dialog.findViewById(R.id.pop_up_for_payment_bill_amt_cont);
         billAmntContainer.setVisibility(View.VISIBLE);
@@ -496,10 +523,10 @@ public class Sales extends AppCompatActivity implements SalesAdapter.SalesAdapte
 
         Button addPaymentBtn = dialog.findViewById(R.id.pop_up_for_payment_add_pay);
         addPaymentBtn.setVisibility(View.VISIBLE);
+        addPaymentBtn.setText("Done");
         addPaymentBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                addPaymentIntent = new Intent(Sales.this, AddPayment.class);
                 dialog.dismiss();
             }
         });
@@ -717,6 +744,18 @@ public class Sales extends AppCompatActivity implements SalesAdapter.SalesAdapte
         } else {
             emptyView.setVisibility(View.GONE);
             recyclerView.setVisibility(View.VISIBLE);
+        }
+    }
+
+    private BluetoothSocket btsocket;
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        try {
+            btsocket = DeviceList.getSocket();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 }
