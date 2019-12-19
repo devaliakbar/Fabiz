@@ -38,7 +38,6 @@ import android.widget.Toast;
 import com.daimajia.androidanimations.library.Techniques;
 import com.daimajia.androidanimations.library.YoYo;
 import com.officialakbarali.fabiz.CommonResumeCheck;
-import com.officialakbarali.fabiz.customer.payment.AddPayment;
 import com.officialakbarali.fabiz.data.barcode.FabizBarcode;
 import com.officialakbarali.fabiz.network.syncInfo.SetupSync;
 import com.officialakbarali.fabiz.network.syncInfo.data.SyncLogDetail;
@@ -493,10 +492,8 @@ public class Sales extends AppCompatActivity implements SalesAdapter.SalesAdapte
                                 cursor.getString(cursor.getColumnIndex(FabizContract.Customer.COLUMN_NAME)), cursor.getString(cursor.getColumnIndex(FabizContract.Customer.COLUMN_ADDRESS)),
                                 cursor.getString(cursor.getColumnIndex(FabizContract.Customer.COLUMN_VAT_NO)));
                     } else {
-                        showToast("Something went wrong");
+                        showToast("Something went wrong, can't print right now");
                     }
-
-                    dialog.dismiss();
                 }
             }
         });
