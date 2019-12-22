@@ -178,9 +178,9 @@ public class Home extends AppCompatActivity {
 
             nameView = findViewById(R.id.cust_home_name);
             if (custName.length() > 38) {
-                nameView.setText(convertToCamelCase(custName.substring(0, 34)) + "...");
+                nameView.setText("Contact Person :" + convertToCamelCase(custName.substring(0, 34)) + "...");
             } else {
-                nameView.setText(convertToCamelCase(custName));
+                nameView.setText("Contact Person :" + convertToCamelCase(custName));
             }
 
             phoneView = findViewById(R.id.cust_home_phone);
@@ -199,9 +199,9 @@ public class Home extends AppCompatActivity {
 
             shopNameView = findViewById(R.id.cust_home_shop_name);
             if (custShopName.length() > 19) {
-                shopNameView.setText(custShopName.substring(0, 15) + "...");
+                shopNameView.setText(convertToCamelCase(custShopName.substring(0, 15) + "..."));
             } else {
-                shopNameView.setText(custShopName);
+                shopNameView.setText(convertToCamelCase(custShopName));
             }
 
 
@@ -245,7 +245,7 @@ public class Home extends AppCompatActivity {
 
         custDueAmt = provider.getCount(FabizContract.BillDetail.TABLE_NAME, FabizContract.BillDetail.COLUMN_DUE, FabizContract.BillDetail.COLUMN_CUST_ID + "=?",
                 new String[]{custId + ""});
-        custDueView.setText("Due Amount :" + TruncateDecimal(custDueAmt + "")+ " " + getCurrency());
+        custDueView.setText("Due Amount :" + TruncateDecimal(custDueAmt + "") + " " + getCurrency());
 
     }
 

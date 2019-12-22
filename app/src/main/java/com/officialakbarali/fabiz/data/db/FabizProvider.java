@@ -126,6 +126,8 @@ public class FabizProvider {
         database.delete(FabizContract.Cart.TABLE_NAME, null, null);
         database.delete(FabizContract.SalesReturn.TABLE_NAME, null, null);
         database.delete(FabizContract.Payment.TABLE_NAME, null, null);
+        database.delete(FabizContract.ItemUnit.TABLE_NAME, null, null);
+        database.delete(FabizContract.RequestItem.TABLE_NAME, null, null);
         successfulTransaction();
         finishTransaction();
     }

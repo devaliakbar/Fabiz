@@ -186,7 +186,7 @@ public class Customer extends AppCompatActivity implements CustomerAdapter.Custo
 
     private void showCustomer(String selection, String[] selectionArg) {
         FabizProvider provider = new FabizProvider(this, false);
-        String[] projection = {FabizContract.Customer._ID, FabizContract.Customer.COLUMN_NAME, FabizContract.Customer.COLUMN_PHONE,
+        String[] projection = {FabizContract.Customer._ID, FabizContract.Customer.COLUMN_SHOP_NAME, FabizContract.Customer.COLUMN_PHONE,
                 FabizContract.Customer.COLUMN_EMAIL, FabizContract.Customer.COLUMN_ADDRESS, FabizContract.Customer.COLUMN_DAY
         };
         Cursor custCursor = provider.query(FabizContract.Customer.TABLE_NAME, projection,
@@ -196,7 +196,7 @@ public class Customer extends AppCompatActivity implements CustomerAdapter.Custo
         List<CustomerDetail> customerList = new ArrayList<>();
         while (custCursor.moveToNext()) {
             customerList.add(new CustomerDetail(custCursor.getString(custCursor.getColumnIndexOrThrow(FabizContract.Customer._ID)),
-                    custCursor.getString(custCursor.getColumnIndexOrThrow(FabizContract.Customer.COLUMN_NAME)),
+                    custCursor.getString(custCursor.getColumnIndexOrThrow(FabizContract.Customer.COLUMN_SHOP_NAME)),
                     custCursor.getString(custCursor.getColumnIndexOrThrow(FabizContract.Customer.COLUMN_PHONE)),
                     custCursor.getString(custCursor.getColumnIndexOrThrow(FabizContract.Customer.COLUMN_EMAIL)),
                     custCursor.getString(custCursor.getColumnIndexOrThrow(FabizContract.Customer.COLUMN_ADDRESS)),

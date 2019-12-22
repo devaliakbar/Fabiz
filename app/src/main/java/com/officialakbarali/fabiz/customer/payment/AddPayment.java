@@ -56,6 +56,7 @@ import static com.officialakbarali.fabiz.data.CommonInformation.GET_DATE_FORMAT_
 import static com.officialakbarali.fabiz.data.CommonInformation.TruncateDecimal;
 import static com.officialakbarali.fabiz.data.CommonInformation.convertDateToDisplayFormat;
 import static com.officialakbarali.fabiz.data.CommonInformation.convertDateToSearchFormat;
+import static com.officialakbarali.fabiz.data.CommonInformation.getCurrency;
 import static com.officialakbarali.fabiz.network.syncInfo.SetupSync.OP_CODE_PAY;
 import static com.officialakbarali.fabiz.network.syncInfo.SetupSync.OP_INSERT;
 import static com.officialakbarali.fabiz.network.syncInfo.SetupSync.OP_UPDATE;
@@ -80,13 +81,18 @@ public class AddPayment extends AppCompatActivity implements SalesReviewAdapter.
     EditText searchEditText;
     String filterSelection = FabizContract.BillDetail.FULL_COLUMN_ID + " LIKE ?";
     RecyclerView recyclerView;
+    FabizProvider provider;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_payment);
 
+        provider = new FabizProvider(this, true);
+
         custId = getIntent().getStringExtra("id");
+
+        payAllSetup();
 
         recyclerView = findViewById(R.id.sales_review_recycler);
         salesReviewAdapter = new SalesReviewAdapter(this, this, true);
@@ -126,8 +132,6 @@ public class AddPayment extends AppCompatActivity implements SalesReviewAdapter.
             }
         });
         setUpDrawableEndEditext();
-
-
         setPaymentsDetail();
     }
 
@@ -285,7 +289,7 @@ public class AddPayment extends AppCompatActivity implements SalesReviewAdapter.
 
                 dueDiscount = dueDiscCheckBox.isChecked();
 
-                setUpPaymentAccount(paidAmountV.getText().toString());
+                setUpPaymentAccount(paidAmountV.getText().toString().trim());
             }
         });
 
@@ -369,8 +373,6 @@ public class AddPayment extends AppCompatActivity implements SalesReviewAdapter.
 
     private void setPaymentToSql(double enteredAmount) {
 
-
-        FabizProvider provider = new FabizProvider(this, true);
 
         double discountAmountToUpdate = mSalesReviewDetail.getDiscount();
         double paidAmountToUpdate = mSalesReviewDetail.getPaid();
@@ -667,5 +669,145 @@ public class AddPayment extends AppCompatActivity implements SalesReviewAdapter.
         } else {
             emptyView.setVisibility(View.GONE);
         }
+    }
+
+    private void payAllSetup() {
+        Button payOBtn = findViewById(R.id.pay_all_btn);
+        payOBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                paymentDialog = new Dialog(AddPayment.this);
+                paymentDialog.setContentView(R.layout.pop_up_payment);
+
+                //SETTING SCREEN WIDTH
+                paymentDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+                Window window = paymentDialog.getWindow();
+                window.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+                //*************
+
+                TextView billDueText = paymentDialog.findViewById(R.id.cust_payment_due);
+                billDueText.setText(TruncateDecimal(dueA + "") + " " + getCurrency());
+
+                dateV = paymentDialog.findViewById(R.id.cust_payment_date);
+                try {
+                    currentTime = convertDateToDisplayFormat(getCurrentDateTime());
+                    dateV.setText(currentTime);
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+
+                Button changeB = paymentDialog.findViewById(R.id.cust_payment_change);
+                changeB.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        showDateTimePicker();
+                    }
+                });
+
+                final EditText paidAmountV = paymentDialog.findViewById(R.id.cust_payment_to_pay);
+
+                CheckBox dueDiscCheckBox = paymentDialog.findViewById(R.id.cust_payment_due_discount);
+                dueDiscCheckBox.setVisibility(View.GONE);
+
+                Button payNowB = paymentDialog.findViewById(R.id.cust_payment_pay_now);
+
+                payNowB.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        String fromInput = paidAmountV.getText().toString().trim();
+                        if (fromInput.matches("")) {
+                            showToast("Please enter amount");
+                            return;
+                        }
+
+                        try {
+                            double enteredAmt = Double.parseDouble(fromInput);
+                            if (enteredAmt > 0) {
+                                if (enteredAmt > dueA) {
+                                    showToast("Entered amount is greater than Total Due");
+                                    return;
+                                }
+                                setUpBalanceAmntToAnotherBill(enteredAmt);
+                            } else {
+                                showToast("Entered number is less than 0");
+                            }
+                        } catch (NumberFormatException e) {
+                            showToast("Please enter valid amount");
+                        }
+                    }
+                });
+                paymentDialog.show();
+            }
+        });
+    }
+
+    private void setUpBalanceAmntToAnotherBill(double amountToBeAdd) {
+        List<SyncLogDetail> syncLogList = new ArrayList<>();
+        provider.createTransaction();
+
+        Cursor balBill = provider.query(FabizContract.BillDetail.TABLE_NAME, new String[]
+                        {FabizContract.BillDetail._ID, FabizContract.BillDetail.COLUMN_PAID, FabizContract.BillDetail.COLUMN_DUE},
+                FabizContract.BillDetail.COLUMN_DUE + " > ? AND " + FabizContract.BillDetail.FULL_COLUMN_CUST_ID + "=?", new String[]{"0", custId}, FabizContract.BillDetail._ID + " ASC");
+
+        while (balBill.moveToNext()) {
+            double cBillPaidAmnt;
+            double cBillDueAmt = balBill.getDouble(balBill.getColumnIndexOrThrow(FabizContract.BillDetail.COLUMN_DUE));
+            if (cBillDueAmt <= amountToBeAdd) {
+                cBillPaidAmnt = cBillDueAmt;
+                cBillDueAmt = 0;
+                amountToBeAdd -= cBillPaidAmnt;
+            } else {
+                cBillPaidAmnt = amountToBeAdd;
+                cBillDueAmt -= amountToBeAdd;
+                amountToBeAdd = 0;
+            }
+
+            String cbillId = balBill.getString(balBill.getColumnIndexOrThrow(FabizContract.BillDetail._ID));
+
+            String idToInsertPayment = provider.getIdForInsert(FabizContract.Payment.TABLE_NAME, "");
+            if (idToInsertPayment.matches("-1")) {
+                provider.finishTransaction();
+                return;
+            }
+
+            ContentValues logTranscValues = new ContentValues();
+            logTranscValues.put(FabizContract.Payment._ID, idToInsertPayment);
+            logTranscValues.put(FabizContract.Payment.COLUMN_BILL_ID, cbillId);
+            logTranscValues.put(FabizContract.Payment.COLUMN_DATE, currentTime);
+            logTranscValues.put(FabizContract.Payment.COLUMN_AMOUNT, cBillPaidAmnt);
+            logTranscValues.put(FabizContract.Payment.COLUMN_TYPE, "P");
+
+            long insertIdPayment = provider.insert(FabizContract.Payment.TABLE_NAME, logTranscValues);
+
+
+            if (insertIdPayment > 0) {
+                syncLogList.add(new SyncLogDetail(idToInsertPayment + "", FabizContract.Payment.TABLE_NAME, OP_INSERT));
+                double upPaidAmount = balBill.getDouble(balBill.getColumnIndexOrThrow(FabizContract.BillDetail.COLUMN_PAID));
+                upPaidAmount += cBillPaidAmnt;
+
+                ContentValues accUpValues = new ContentValues();
+                accUpValues.put(FabizContract.BillDetail.COLUMN_PAID, upPaidAmount);
+                accUpValues.put(FabizContract.BillDetail.COLUMN_DUE, cBillDueAmt);
+                int upAffectedRows = provider.update(FabizContract.BillDetail.TABLE_NAME, accUpValues,
+                        FabizContract.BillDetail._ID + "=?", new String[]{cbillId + ""});
+
+                if (upAffectedRows == 1) {
+                    syncLogList.add(new SyncLogDetail(cbillId, FabizContract.BillDetail.TABLE_NAME, OP_UPDATE));
+                } else {
+                    provider.finishTransaction();
+                    showToast("Something went wrong");
+                    return;
+                }
+            } else {
+                provider.finishTransaction();
+                showToast("Failed to save");
+                return;
+            }
+            if (amountToBeAdd == 0) {
+                break;
+            }
+        }
+        new SetupSync(this, syncLogList, provider, "Amount saved successful", OP_CODE_PAY);
+        finish();
     }
 }

@@ -31,7 +31,7 @@ public class BPrinter {
         StaffName = sharedPreferences.getString("nameOfStaff", "User");
     }
 
-    public void printInvoice(String billId,String date, List<Cart> cartItems, String totalAmount, String paidAmount, String customerName, String customerAddress, String vat) {
+    public void printInvoice(String billId,String date, List<Cart> cartItems, String totalAmount, String paidAmount,String totalDue, String customerName, String customerAddress, String vat) {
         try {
             outputStream = btsocket.getOutputStream();
         } catch (IOException e) {
@@ -71,6 +71,7 @@ public class BPrinter {
             printCustom("................................", 0, 0);
             printCustom("Total Amount :" + TruncateDecimal(totalAmount) + " " + getCurrency(), 1, 2);
             printCustom("Received Amount :" + TruncateDecimal(paidAmount) + " " + getCurrency(), 1, 2);
+            printCustom("Total Due Amount :" + TruncateDecimal(totalDue) + " " + getCurrency(), 1, 2);
             printCustom("................................", 0, 0);
             printNewLine();
             printCustom(customerName, 2, 1);

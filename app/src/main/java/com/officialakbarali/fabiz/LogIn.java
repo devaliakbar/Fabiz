@@ -40,6 +40,7 @@ import org.json.JSONObject;
 import java.util.HashMap;
 
 import static com.officialakbarali.fabiz.data.CommonInformation.SET_DECIMAL_LENGTH;
+import static com.officialakbarali.fabiz.data.CommonInformation.setCurrency;
 import static com.officialakbarali.fabiz.data.MyAppVersion.GET_MY_APP_VERSION;
 
 public class LogIn extends AppCompatActivity {
@@ -168,57 +169,70 @@ public class LogIn extends AppCompatActivity {
         editor.putInt("idOfStaff", idOfStaff);
         editor.putString("nameOfStaff", staffName);
 
+
+        editor.putInt("decimal_precision", 2);
+        SET_DECIMAL_LENGTH(2);
+
+        editor.putString("currency", "BD");
+        setCurrency("BD");
+        editor.apply();
+
+
         final Intent mainHomeIntent = new Intent(LogIn.this, ForcePull.class);
         mainHomeIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
-
-        final LinearLayout precisionContainer = findViewById(R.id.precision_cont);
-        final RelativeLayout logInContainer = findViewById(R.id.main_log_in_cont);
-
-        YoYo.with(Techniques.SlideOutUp).withListener(new Animator.AnimatorListener() {
-            @Override
-            public void onAnimationStart(Animator animation) {
-
-            }
-
-            @Override
-            public void onAnimationEnd(Animator animation) {
-                logInContainer.setVisibility(View.GONE);
-                precisionContainer.setVisibility(View.VISIBLE);
-                YoYo.with(Techniques.SlideInUp).duration(600).repeat(0).playOn(precisionContainer);
-            }
-
-            @Override
-            public void onAnimationCancel(Animator animation) {
-
-            }
-
-            @Override
-            public void onAnimationRepeat(Animator animation) {
-
-            }
-        }).duration(450).repeat(0).playOn(logInContainer);
-
-
-        Button pre2 = findViewById(R.id.pre_2);
-        pre2.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                editor.putInt("decimal_precision", 2);
-                SET_DECIMAL_LENGTH(2);
-                editor.apply();
-                setUpCurrency(mainHomeIntent);
-            }
-        });
-        Button pre3 = findViewById(R.id.pre_3);
-        pre3.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                editor.putInt("decimal_precision", 3);
-                SET_DECIMAL_LENGTH(3);
-                editor.apply();
-                setUpCurrency(mainHomeIntent);
-            }
-        });
+        startActivity(mainHomeIntent);
+        overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+//
+//
+//
+//        final LinearLayout precisionContainer = findViewById(R.id.precision_cont);
+//        final RelativeLayout logInContainer = findViewById(R.id.main_log_in_cont);
+//
+//        YoYo.with(Techniques.SlideOutUp).withListener(new Animator.AnimatorListener() {
+//            @Override
+//            public void onAnimationStart(Animator animation) {
+//
+//            }
+//
+//            @Override
+//            public void onAnimationEnd(Animator animation) {
+//                logInContainer.setVisibility(View.GONE);
+//                precisionContainer.setVisibility(View.VISIBLE);
+//                YoYo.with(Techniques.SlideInUp).duration(600).repeat(0).playOn(precisionContainer);
+//            }
+//
+//            @Override
+//            public void onAnimationCancel(Animator animation) {
+//
+//            }
+//
+//            @Override
+//            public void onAnimationRepeat(Animator animation) {
+//
+//            }
+//        }).duration(450).repeat(0).playOn(logInContainer);
+//
+//
+//        Button pre2 = findViewById(R.id.pre_2);
+//        pre2.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                editor.putInt("decimal_precision", 2);
+//                SET_DECIMAL_LENGTH(2);
+//                editor.apply();
+//                setUpCurrency(mainHomeIntent);
+//            }
+//        });
+//        Button pre3 = findViewById(R.id.pre_3);
+//        pre3.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                editor.putInt("decimal_precision", 3);
+//                SET_DECIMAL_LENGTH(3);
+//                editor.apply();
+//                setUpCurrency(mainHomeIntent);
+//            }
+//        });
     }
 
 
@@ -266,8 +280,10 @@ public class LogIn extends AppCompatActivity {
                 SharedPreferences.Editor editor = sharedPreferences.edit();
                 if (currency.length() > 0 && currency.length() <= 3) {
                     editor.putString("currency", currency);
+                    setCurrency(currency);
                 } else {
                     editor.putString("currency", "BD");
+                    setCurrency("BD");
                 }
                 editor.apply();
                 startActivity(pIntent);

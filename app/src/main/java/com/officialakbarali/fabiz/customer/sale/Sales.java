@@ -38,6 +38,7 @@ import android.widget.Toast;
 import com.daimajia.androidanimations.library.Techniques;
 import com.daimajia.androidanimations.library.YoYo;
 import com.officialakbarali.fabiz.CommonResumeCheck;
+import com.officialakbarali.fabiz.LogIn;
 import com.officialakbarali.fabiz.data.barcode.FabizBarcode;
 import com.officialakbarali.fabiz.network.syncInfo.SetupSync;
 import com.officialakbarali.fabiz.network.syncInfo.data.SyncLogDetail;
@@ -65,8 +66,10 @@ import static com.officialakbarali.fabiz.data.CommonInformation.TruncateDecimal;
 import static com.officialakbarali.fabiz.data.CommonInformation.convertDateToDisplayFormat;
 import static com.officialakbarali.fabiz.data.CommonInformation.getCurrency;
 import static com.officialakbarali.fabiz.data.barcode.FabizBarcode.FOR_ITEM;
+import static com.officialakbarali.fabiz.network.syncInfo.SetupSync.OP_CODE_PAY;
 import static com.officialakbarali.fabiz.network.syncInfo.SetupSync.OP_CODE_SALE;
 import static com.officialakbarali.fabiz.network.syncInfo.SetupSync.OP_INSERT;
+import static com.officialakbarali.fabiz.network.syncInfo.SetupSync.OP_UPDATE;
 
 
 public class Sales extends AppCompatActivity implements SalesAdapter.SalesAdapterOnClickListener {
@@ -173,23 +176,15 @@ public class Sales extends AppCompatActivity implements SalesAdapter.SalesAdapte
             @Override
             public void onClick(View v) {
                 if (cartItems.isEmpty()) {
-
                     showToast("Please Add Item");
                     return;
                 }
-
-                if (getEnteredAmnt() == 0) {
-                    saveThisBill();
+                if (getEnteredAmnt() < 0) {
+                    showToast("Please enter a valid amount");
                     return;
                 }
-
                 if (getEnteredAmnt() > totalDueAmnt) {
                     showToast("Entered Amount is greater than total due amount");
-                    return;
-                }
-
-                if (getEnteredAmnt() > totAmountToSave) {
-                    showToast("Entered amount is greater than bill amount");
                     return;
                 }
 
@@ -247,7 +242,6 @@ public class Sales extends AppCompatActivity implements SalesAdapter.SalesAdapte
 
     private String getCurrentDateTime() {
         SimpleDateFormat sdf = new SimpleDateFormat(GET_DATE_FORMAT_REAL());
-        Log.i("Time:", sdf.format(new Date()));
         return sdf.format(new Date());
     }
 
@@ -315,52 +309,60 @@ public class Sales extends AppCompatActivity implements SalesAdapter.SalesAdapte
 
     private void saveThisBill() {
         double enteredAmntForUpdate = getEnteredAmnt();
-        double dueAmount = totAmountToSave - enteredAmntForUpdate;
-
+        double currentBillMaxAmt = enteredAmntForUpdate;
         FabizProvider provider = new FabizProvider(this, true);
-
-
-        EditText prefixE = findViewById(R.id.cust_sale_prefix);
-        String prefix = prefixE.getText().toString();
-
-        if (prefix.matches("")) {
-            prefix = "A";
-        }
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putString("sales_prefix", prefix);
-        editor.apply();
-
-        idToInsertBill = provider.getIdForInsert(FabizContract.BillDetail.TABLE_NAME, prefix);
-        if (idToInsertBill.matches("-1")) {
-            showToast("Maximum limit of offline mode reached,please contact customer support");
-            return;
-        }
-
-        idToInsertBill = prefix + idToInsertBill;
-
-        ContentValues billValues = new ContentValues();
-        billValues.put(FabizContract.BillDetail._ID, idToInsertBill);
-        billValues.put(FabizContract.BillDetail.COLUMN_CUST_ID, custId);
-        billValues.put(FabizContract.BillDetail.COLUMN_DATE, currentTime);
-        billValues.put(FabizContract.BillDetail.COLUMN_QTY, totQtyForSave);
-        billValues.put(FabizContract.BillDetail.COLUMN_PRICE, totAmountToSave);
-        billValues.put(FabizContract.BillDetail.COLUMN_RETURNED_TOTAL, "0");
-        billValues.put(FabizContract.BillDetail.COLUMN_CURRENT_TOTAL, totAmountToSave);
-        billValues.put(FabizContract.BillDetail.COLUMN_PAID, enteredAmntForUpdate);
-        billValues.put(FabizContract.BillDetail.COLUMN_DUE, dueAmount);
-        billValues.put(FabizContract.BillDetail.COLUMN_DISCOUNT, "0");
-
         try {
             //********TRANSACTION STARTED
             provider.createTransaction();
-            String billId = provider.insert(FabizContract.BillDetail.TABLE_NAME, billValues) + "";
-            Log.i("Bill Id:", "GId :" + idToInsertBill + ", RId :" + billId);
+            List<SyncLogDetail> syncLogList = new ArrayList<>();
+            if (enteredAmntForUpdate > 0) {
+                //SET BALANCE AMOUNT TO ANOTHER BILL
+                if (enteredAmntForUpdate > totAmountToSave) {
+                    currentBillMaxAmt = totAmountToSave;
+                    if (setUpBalanceAmntToAnotherBill(provider, syncLogList, enteredAmntForUpdate - totAmountToSave) == null) {
+                        provider.finishTransaction();
+                        return;
+                    }
+                }
+            }
+            double dueAmount = totAmountToSave - currentBillMaxAmt;
 
+            EditText prefixE = findViewById(R.id.cust_sale_prefix);
+            String prefix = prefixE.getText().toString();
+
+            if (prefix.matches("")) {
+                prefix = "A";
+            }
+            SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+            SharedPreferences.Editor editor = sharedPreferences.edit();
+            editor.putString("sales_prefix", prefix);
+            editor.apply();
+
+            idToInsertBill = provider.getIdForInsert(FabizContract.BillDetail.TABLE_NAME, prefix);
+            if (idToInsertBill.matches("-1")) {
+                showToast("Maximum limit of offline mode reached,please contact customer support");
+                return;
+            }
+
+            idToInsertBill = prefix + idToInsertBill;
+
+            ContentValues billValues = new ContentValues();
+            billValues.put(FabizContract.BillDetail._ID, idToInsertBill);
+            billValues.put(FabizContract.BillDetail.COLUMN_CUST_ID, custId);
+            billValues.put(FabizContract.BillDetail.COLUMN_DATE, currentTime);
+            billValues.put(FabizContract.BillDetail.COLUMN_QTY, totQtyForSave);
+            billValues.put(FabizContract.BillDetail.COLUMN_PRICE, totAmountToSave);
+            billValues.put(FabizContract.BillDetail.COLUMN_RETURNED_TOTAL, "0");
+            billValues.put(FabizContract.BillDetail.COLUMN_CURRENT_TOTAL, totAmountToSave);
+            billValues.put(FabizContract.BillDetail.COLUMN_PAID, currentBillMaxAmt);
+            billValues.put(FabizContract.BillDetail.COLUMN_DUE, dueAmount);
+            billValues.put(FabizContract.BillDetail.COLUMN_DISCOUNT, "0");
+
+
+            String billId = provider.insert(FabizContract.BillDetail.TABLE_NAME, billValues) + "";
 
             if (Long.parseLong(billId) > 0) {
                 billId = idToInsertBill;
-                List<SyncLogDetail> syncLogList = new ArrayList<>();
                 syncLogList.add(new SyncLogDetail(billId, FabizContract.BillDetail.TABLE_NAME, OP_INSERT));
 
 
@@ -404,21 +406,19 @@ public class Sales extends AppCompatActivity implements SalesAdapter.SalesAdapte
 
                 if (i == cartItems.size()) {
 
-                    long insertIdPayment = 0;
+                    long insertIdPayment;
                     if (enteredAmntForUpdate != 0) {
-
                         String idToInsertPayment = provider.getIdForInsert(FabizContract.Payment.TABLE_NAME, "");
                         if (idToInsertPayment.matches("-1")) {
                             provider.finishTransaction();
                             showToast("Maximum limit of offline mode reached,please contact customer support");
                             return;
                         }
-
                         ContentValues logTranscValues = new ContentValues();
                         logTranscValues.put(FabizContract.Payment._ID, idToInsertPayment);
                         logTranscValues.put(FabizContract.Payment.COLUMN_BILL_ID, billId);
                         logTranscValues.put(FabizContract.Payment.COLUMN_DATE, currentTime);
-                        logTranscValues.put(FabizContract.Payment.COLUMN_AMOUNT, enteredAmntForUpdate);
+                        logTranscValues.put(FabizContract.Payment.COLUMN_AMOUNT, currentBillMaxAmt);
                         logTranscValues.put(FabizContract.Payment.COLUMN_TYPE, "P");
                         insertIdPayment = provider.insert(FabizContract.Payment.TABLE_NAME, logTranscValues);
                         if (insertIdPayment > 0) {
@@ -431,7 +431,7 @@ public class Sales extends AppCompatActivity implements SalesAdapter.SalesAdapte
 
                         //DONE**********************************************
                         new SetupSync(this, syncLogList, provider, "Successfully Saved.", OP_CODE_SALE);
-                        showDialogueInfo(totAmountToSave, enteredAmntForUpdate);
+                        showDialogueInfo(totAmountToSave, enteredAmntForUpdate, currentBillMaxAmt);
 
                     } else {
                         provider.finishTransaction();
@@ -455,8 +455,9 @@ public class Sales extends AppCompatActivity implements SalesAdapter.SalesAdapte
         }
     }
 
-    private void showDialogueInfo(final double billAmt, final double entAmt) {
-        double dueAmt = billAmt - entAmt;
+    private void showDialogueInfo(final double billAmt, final double entAmt, double cBillEnteredAmnt) {
+        ///todo
+        double dueAmt = billAmt - cBillEnteredAmnt;
         final Dialog dialog = new Dialog(this);
         dialog.setContentView(R.layout.pop_up_for_sale_and_payment_success);
         dialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
@@ -472,7 +473,7 @@ public class Sales extends AppCompatActivity implements SalesAdapter.SalesAdapte
         Window window = dialog.getWindow();
         window.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         //*************
-
+        final double currentDue = (dueAmtPassed + billAmt) - entAmt;
 
         Button printButton = dialog.findViewById(R.id.pop_up_for_payment_okay);
         printButton.setOnClickListener(new View.OnClickListener() {
@@ -488,7 +489,7 @@ public class Sales extends AppCompatActivity implements SalesAdapter.SalesAdapte
                                     FabizContract.Customer.COLUMN_VAT_NO, FabizContract.Customer.COLUMN_ADDRESS},
                             FabizContract.Customer._ID + "=?", new String[]{custId}, null);
                     if (cursor.moveToNext()) {
-                        printer.printInvoice(idToInsertBill, currentTime, cartItems, billAmt + "", entAmt + "",
+                        printer.printInvoice(idToInsertBill, currentTime, cartItems, billAmt + "", entAmt + "", currentDue + "",
                                 cursor.getString(cursor.getColumnIndex(FabizContract.Customer.COLUMN_NAME)), cursor.getString(cursor.getColumnIndex(FabizContract.Customer.COLUMN_ADDRESS)),
                                 cursor.getString(cursor.getColumnIndex(FabizContract.Customer.COLUMN_VAT_NO)));
                     } else {
@@ -515,8 +516,7 @@ public class Sales extends AppCompatActivity implements SalesAdapter.SalesAdapte
         LinearLayout totDueCont = dialog.findViewById(R.id.pop_up_for_payment_due_cont);
         totDueCont.setVisibility(View.VISIBLE);
         TextView totDueAmnt = dialog.findViewById(R.id.pop_up_for_payment_due_tot);
-        double currentDue = (dueAmtPassed + billAmt) - entAmt;
-        totDueAmnt.setText(TruncateDecimal(currentDue + ""));
+        totDueAmnt.setText(TruncateDecimal(currentDue + "") + " " + getCurrency());
 
         Button addPaymentBtn = dialog.findViewById(R.id.pop_up_for_payment_add_pay);
         addPaymentBtn.setVisibility(View.VISIBLE);
@@ -529,21 +529,21 @@ public class Sales extends AppCompatActivity implements SalesAdapter.SalesAdapte
         });
 
 
-        billAmntV.setText(TruncateDecimal(billAmt + ""));
+        billAmntV.setText(TruncateDecimal(billAmt + "") + " " + getCurrency());
         //       dateV.setText( currentTime);
-        enteredAmntV.setText(TruncateDecimal(entAmt + ""));
-        dueAmtV.setText(TruncateDecimal(dueAmt + ""));
+        enteredAmntV.setText(TruncateDecimal(entAmt + "") + " " + getCurrency());
+        dueAmtV.setText(TruncateDecimal(dueAmt + "") + " " + getCurrency());
 
         dialog.show();
     }
 
     private double getEnteredAmnt() {
-        if (amtEditText.getText().toString().trim().matches("") || amtEditText.getText().toString().trim().matches("-") || amtEditText.getText().toString().trim().matches(".")) {
+        if (amtEditText.getText().toString().trim().matches("") || amtEditText.getText().toString().trim().matches("-")) {
             return 0;
         } else {
             try {
                 return Double.parseDouble(amtEditText.getText().toString().trim());
-            } catch (Error e) {
+            } catch (NumberFormatException e) {
                 return 0;
             }
         }
@@ -754,5 +754,69 @@ public class Sales extends AppCompatActivity implements SalesAdapter.SalesAdapte
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    private List<SyncLogDetail> setUpBalanceAmntToAnotherBill(FabizProvider provider, List<SyncLogDetail> syncLogList, double balAmountToAddAnotherBill) {
+
+        Cursor balBill = provider.query(FabizContract.BillDetail.TABLE_NAME, new String[]
+                        {FabizContract.BillDetail._ID, FabizContract.BillDetail.COLUMN_PAID, FabizContract.BillDetail.COLUMN_DUE},
+                FabizContract.BillDetail.COLUMN_DUE + " > ? AND " + FabizContract.BillDetail.FULL_COLUMN_CUST_ID + "=?", new String[]{"0", custId}, FabizContract.BillDetail._ID + " ASC");
+
+        while (balBill.moveToNext()) {
+            double cBillPaidAmnt;
+            double cBillDueAmt = balBill.getDouble(balBill.getColumnIndexOrThrow(FabizContract.BillDetail.COLUMN_DUE));
+            if (cBillDueAmt <= balAmountToAddAnotherBill) {
+                cBillPaidAmnt = cBillDueAmt;
+                cBillDueAmt = 0;
+                balAmountToAddAnotherBill -= cBillPaidAmnt;
+            } else {
+                cBillPaidAmnt = balAmountToAddAnotherBill;
+                cBillDueAmt -= balAmountToAddAnotherBill;
+                balAmountToAddAnotherBill = 0;
+            }
+
+            String cbillId = balBill.getString(balBill.getColumnIndexOrThrow(FabizContract.BillDetail._ID));
+
+            String idToInsertPayment = provider.getIdForInsert(FabizContract.Payment.TABLE_NAME, "");
+            if (idToInsertPayment.matches("-1")) {
+                return null;
+            }
+
+            ContentValues logTranscValues = new ContentValues();
+            logTranscValues.put(FabizContract.Payment._ID, idToInsertPayment);
+            logTranscValues.put(FabizContract.Payment.COLUMN_BILL_ID, cbillId);
+            logTranscValues.put(FabizContract.Payment.COLUMN_DATE, currentTime);
+            logTranscValues.put(FabizContract.Payment.COLUMN_AMOUNT, cBillPaidAmnt);
+            logTranscValues.put(FabizContract.Payment.COLUMN_TYPE, "P");
+
+            long insertIdPayment = provider.insert(FabizContract.Payment.TABLE_NAME, logTranscValues);
+
+
+            if (insertIdPayment > 0) {
+                syncLogList.add(new SyncLogDetail(idToInsertPayment + "", FabizContract.Payment.TABLE_NAME, OP_INSERT));
+                double upPaidAmount = balBill.getDouble(balBill.getColumnIndexOrThrow(FabizContract.BillDetail.COLUMN_PAID));
+                upPaidAmount += cBillPaidAmnt;
+
+                ContentValues accUpValues = new ContentValues();
+                accUpValues.put(FabizContract.BillDetail.COLUMN_PAID, upPaidAmount);
+                accUpValues.put(FabizContract.BillDetail.COLUMN_DUE, cBillDueAmt);
+                int upAffectedRows = provider.update(FabizContract.BillDetail.TABLE_NAME, accUpValues,
+                        FabizContract.BillDetail._ID + "=?", new String[]{cbillId + ""});
+
+                if (upAffectedRows == 1) {
+                    syncLogList.add(new SyncLogDetail(cbillId, FabizContract.BillDetail.TABLE_NAME, OP_UPDATE));
+                } else {
+                    showToast("Something went wrong");
+                    return null;
+                }
+            } else {
+                showToast("Failed to save");
+                return null;
+            }
+            if (balAmountToAddAnotherBill == 0) {
+                break;
+            }
+        }
+        return syncLogList;
     }
 }

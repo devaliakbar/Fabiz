@@ -15,7 +15,7 @@
             android:padding="18dp">
 
         <TextView
-                android:id="@+id/cust_home_name"
+                android:id="@+id/cust_home_shop_name"
                 style="@style/text_size_large"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -33,7 +33,7 @@
 
 
         <TextView
-                android:id="@+id/cust_home_shop_name"
+                android:id="@+id/cust_home_name"
                 style="@style/text_size_med"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

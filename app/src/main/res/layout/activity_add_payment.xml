@@ -14,9 +14,20 @@
             style="@style/text_size_mid_l"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="20dp"
             android:textColor="@color/text_color"
             tools:text="" />
+
+    <Button
+            android:id="@+id/pay_all_btn"
+            style="@style/text_size_med"
+            android:layout_width="match_parent"
+            android:layout_height="57dp"
+            android:layout_marginTop="15dp"
+            android:layout_marginBottom="15dp"
+            android:background="@drawable/button_color_gradient"
+            android:text="Pay"
+            android:textAllCaps="false"
+            android:textColor="@color/pure_white" />
 
     <LinearLayout
             android:id="@+id/search_cont"
