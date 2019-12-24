@@ -12,28 +12,44 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@drawable/rounded_blue_bottom"
-            android:orientation="vertical"
+            android:gravity="center"
+            android:orientation="horizontal"
             android:padding="18dp">
 
-
-        <TextView
-                android:id="@+id/cust_sale_billId"
-                style="@style/text_size_med"
-                android:layout_width="wrap_content"
+        <LinearLayout
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="5dp"
-                android:layout_marginBottom="10dp"
-                android:textColor="@color/pure_white"
-                tools:text="Billid :" />
+                android:layout_weight="1"
+                android:orientation="vertical">
 
-        <TextView
-                android:id="@+id/cust_sale_time"
-                style="@style/text_size_med"
+            <TextView
+                    android:id="@+id/cust_sale_billId"
+                    style="@style/text_size_med"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="5dp"
+                    android:layout_marginBottom="10dp"
+                    android:textColor="@color/pure_white"
+                    tools:text="Billid :" />
+
+            <TextView
+                    android:id="@+id/cust_sale_time"
+                    style="@style/text_size_med"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="5dp"
+                    android:textColor="@color/pure_white"
+                    tools:text="Billid :" />
+        </LinearLayout>
+
+        <ImageButton
+                android:id="@+id/print_invoice"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="5dp"
-                android:textColor="@color/pure_white"
-                tools:text="Billid :" />
+                android:layout_height="30dp"
+                android:background="?attr/selectableItemBackground"
+                android:scaleType="fitCenter"
+                android:src="@drawable/ic_print_p" />
+
 
     </LinearLayout>
 

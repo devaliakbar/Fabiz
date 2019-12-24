@@ -56,13 +56,18 @@ public class MainActivity extends AppCompatActivity {
 
     private void initialSetup() {
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        if (sharedPreferences.getInt("app_version_no", 0) == 0 || sharedPreferences.getInt("app_version_no", 0) != GET_MY_APP_VERSION()) {
+            SharedPreferences.Editor editor = sharedPreferences.edit();
+            editor.clear();
+            editor.apply();
+        }
 
         boolean appVersionProblem = sharedPreferences.getBoolean("version", false);
         if (appVersionProblem) {
             Intent versionIntent = new Intent(this, AppVersion.class);
             versionIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
             startActivity(versionIntent);
-            overridePendingTransition(R.anim.slide_in_right,R.anim.slide_out_left);
+            overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
         } else {
             String userName = sharedPreferences.getString("my_username", null);
             String password = sharedPreferences.getString("my_password", null);
@@ -76,14 +81,14 @@ public class MainActivity extends AppCompatActivity {
                     Intent forcePullIntent = new Intent(this, ForcePull.class);
                     forcePullIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
                     startActivity(forcePullIntent);
-                    overridePendingTransition(R.anim.slide_in_right,R.anim.slide_out_left);
+                    overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
                 } else {
                     boolean updateData = sharedPreferences.getBoolean("update_data", false);
                     if (updateData) {
                         Intent updateDataIntent = new Intent(this, UpdateData.class);
                         updateDataIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
                         startActivity(updateDataIntent);
-                        overridePendingTransition(R.anim.slide_in_right,R.anim.slide_out_left);
+                        overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
                     } else {
                         boolean isServiceRunning = sharedPreferences.getBoolean("service_running", false);
                         if (!isServiceRunning) {
@@ -93,7 +98,7 @@ public class MainActivity extends AppCompatActivity {
                         Intent mainHomeIntent = new Intent(this, MainHome.class);
                         mainHomeIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
                         startActivity(mainHomeIntent);
-                        overridePendingTransition(R.anim.slide_in_right,R.anim.slide_out_left);
+                        overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
                     }
                 }
             }
@@ -114,17 +119,18 @@ public class MainActivity extends AppCompatActivity {
                         Intent loginIntent = new Intent(MainActivity.this, LogIn.class);
                         loginIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
                         startActivity(loginIntent);
-                        overridePendingTransition(R.anim.slide_in_right,R.anim.slide_out_left);
+                        overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
                     } else {
                         if (jsonObject.getString("status").equals("VERSION")) {
                             SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(MainActivity.this);
                             SharedPreferences.Editor editor = sharedPreferences.edit();
                             editor.putBoolean("version", true);
+                            editor.putInt("app_version_no", GET_MY_APP_VERSION());
                             editor.apply();
                             Intent versionIntent = new Intent(MainActivity.this, AppVersion.class);
                             versionIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
                             startActivity(versionIntent);
-                            overridePendingTransition(R.anim.slide_in_right,R.anim.slide_out_left);
+                            overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
                         } else {
                             showToast("Something went wrong");
                         }

@@ -4,12 +4,14 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
+import static com.officialakbarali.fabiz.data.MyAppVersion.GET_MY_APP_VERSION;
+
 public class FabizDbHelper extends SQLiteOpenHelper {
 
     private static FabizDbHelper mInstance = null;
 
     private static final String DATABASE_NAME = "fabiz.db";
-    private static final int DATABASE_VERSION = 1;
+    private static final int DATABASE_VERSION = GET_MY_APP_VERSION();
 
 
     public static FabizDbHelper getInstance(Context ctx) {

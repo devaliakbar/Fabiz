@@ -11,6 +11,7 @@ import android.database.Cursor;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
@@ -137,7 +138,8 @@ public class SalesReview extends AppCompatActivity implements SalesReviewAdapter
         Intent salesDetaiiilIntent = new Intent(SalesReview.this, com.officialakbarali.fabiz.customer.sale.SalesReviewDetail.class);
         salesDetaiiilIntent.putExtra("custId", custId + "");
         salesDetaiiilIntent.putExtra("billId", idOfBill + "");
-
+        Log.i("Current Total Passed1 :", getIntent().getDoubleExtra("totDue", 0) + "");
+        salesDetaiiilIntent.putExtra("totDue", getIntent().getDoubleExtra("totDue", 0));
         if (FROM_SALERS_RETURN) {
             salesDetaiiilIntent.putExtra("fromSalesReturn", true);
         } else {
@@ -306,6 +308,7 @@ public class SalesReview extends AppCompatActivity implements SalesReviewAdapter
             showBills(filterSelection, new String[]{searchEditText.getText().toString().trim() + "%"});
         }
     }
+
     private String getSelection(String filterFromForm) {
         String caseSelection;
 

@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
 import com.officialakbarali.fabiz.customer.sale.data.Cart;
+import com.officialakbarali.fabiz.customer.sale.data.SalesReturnReviewItem;
 import com.officialakbarali.fabiz.requestStock.data.RequestItem;
 
 import static com.officialakbarali.fabiz.data.CommonInformation.TruncateDecimal;
@@ -31,6 +32,54 @@ public class BPrinter {
         StaffName = sharedPreferences.getString("nameOfStaff", "User");
     }
 
+    public void printSalesReturnReciept(SalesReturnReviewItem printList, String totDue, String customerName, String customerAddress, String vat) {
+        try {
+            outputStream = btsocket.getOutputStream();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        try {
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            outputStream = btsocket.getOutputStream();
+            byte[] printformat = new byte[]{0x1B, 0x21, 0x03};
+            outputStream.write(printformat);
+
+            printCustom("My Good Shop", 3, 1);
+            printCustom("VAT NO : 12345678", 1, 1);
+            printCustom("8 MILE NY USA", 0, 1);
+            printNewLine();
+            printCustom("Sales Return", 2, 1);
+            printNewLine();
+            printCustom("BillId :" + printList.getBillId(), 0, 0);
+            printCustom("Date   :" + printList.getDate(), 0, 0);
+            printCustom("Staff  :" + StaffName, 0, 0);
+            printCustom("................................", 0, 0);
+
+            String itemInfo = printList.getItemId() + " / " + printList.getName()
+                    + " / " + printList.getBrand() + " / " + printList.getCatagory();
+            printCustom(itemInfo, 0, 1);
+            String itemQtyRateInfo = printList.getQty() + " * " + TruncateDecimal(printList.getPrice() + "") + " " + getCurrency();
+            printCustom(itemQtyRateInfo, 0, 1);
+            printCustom("- " + TruncateDecimal(printList.getTotal() + "") + " " + getCurrency(), 1, 1);
+
+            printCustom("................................", 0, 0);
+            printCustom("Current Due Amount :" + TruncateDecimal(totDue) + " " + getCurrency(), 1, 2);
+            printNewLine();
+            printCustom(customerName, 2, 1);
+            printCustom("Vat :" + vat, 1, 1);
+            printCustom(customerAddress + vat, 0, 1);
+            printNewLine();
+            printCustom(">>>  Thank you  <<<", 1, 1);
+
+            outputStream.flush();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
     public void printPaymentReciept(List<String[]> paidSalesList, String totalAmount, String totalDue, String date, String customerName, String customerAddress, String vat) {
         try {

@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -91,6 +92,8 @@ public class Home extends AppCompatActivity {
             public void onClick(View v) {
                 Intent salesReviewIntent = new Intent(Home.this, SalesReview.class);
                 salesReviewIntent.putExtra("id", custId + "");
+                Log.i("Current Total Passed :", custDueAmt + "");
+                salesReviewIntent.putExtra("totDue",custDueAmt);
                 startActivity(salesReviewIntent);
                 overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
             }
@@ -101,6 +104,8 @@ public class Home extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent salesReturnIntent = new Intent(Home.this, SalesReview.class);
+                Log.i("Current Total Passed :", custDueAmt + "");
+                salesReturnIntent.putExtra("totDue",custDueAmt);
                 salesReturnIntent.putExtra("fromSalesReturn", true);
                 salesReturnIntent.putExtra("id", custId + "");
 
@@ -115,6 +120,7 @@ public class Home extends AppCompatActivity {
             public void onClick(View v) {
                 Intent saleReturnReviewIntent = new Intent(Home.this, SalesReturnReview.class);
                 saleReturnReviewIntent.putExtra("id", custId + "");
+                saleReturnReviewIntent.putExtra("totDue",custDueAmt);
                 startActivity(saleReturnReviewIntent);
                 overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
             }

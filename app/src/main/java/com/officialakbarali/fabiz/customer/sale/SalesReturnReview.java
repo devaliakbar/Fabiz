@@ -6,6 +6,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.animation.Animator;
 import android.app.DatePickerDialog;
+import android.bluetooth.BluetoothSocket;
+import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.text.Editable;
@@ -30,7 +32,10 @@ import com.officialakbarali.fabiz.customer.sale.adapter.SalesReturnReviewAdapter
 import com.officialakbarali.fabiz.customer.sale.data.SalesReturnReviewItem;
 import com.officialakbarali.fabiz.data.db.FabizContract;
 import com.officialakbarali.fabiz.data.db.FabizProvider;
+import com.officialakbarali.fabiz.printer.BPrinter;
+import com.officialakbarali.fabiz.printer.DeviceList;
 
+import java.io.IOException;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -39,7 +44,7 @@ import java.util.List;
 import static com.officialakbarali.fabiz.bottomSheets.SalesReviewFilterBottomSheet.SALES_REVIEW_FILTER_TAG;
 import static com.officialakbarali.fabiz.data.CommonInformation.convertDateToSearchFormat;
 
-public class SalesReturnReview extends AppCompatActivity implements SalesReviewFilterBottomSheet.SalesReviewFilterListener {
+public class SalesReturnReview extends AppCompatActivity implements SalesReviewFilterBottomSheet.SalesReviewFilterListener, SalesReturnReviewAdapter.SalesReturnReviewAdapterListener {
     private String custId;
 
     SalesReturnReviewAdapter reviewAdapter;
@@ -55,7 +60,7 @@ public class SalesReturnReview extends AppCompatActivity implements SalesReviewF
         custId = getIntent().getStringExtra("id");
 
         recyclerView = findViewById(R.id.sales_return_review_recycler);
-        reviewAdapter = new SalesReturnReviewAdapter(this);
+        reviewAdapter = new SalesReturnReviewAdapter(this, this);
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setHasFixedSize(true);
@@ -294,7 +299,7 @@ public class SalesReturnReview extends AppCompatActivity implements SalesReviewF
                     public void onAnimationRepeat(Animator animation) {
 
                     }
-                }).duration(400).repeat(0).playOn(                searchCont
+                }).duration(400).repeat(0).playOn(searchCont
                 );
             }
 
@@ -320,4 +325,64 @@ public class SalesReturnReview extends AppCompatActivity implements SalesReviewF
         }
     }
 
+    private BluetoothSocket btsocket;
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        try {
+            if (btsocket != null) {
+                btsocket.close();
+                btsocket = null;
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        try {
+            btsocket = DeviceList.getSocket();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void onClick(SalesReturnReviewItem salesReturnReviewItem) {
+        double cdue = getIntent().getDoubleExtra("totDue",0);
+        if (btsocket == null) {
+            Intent BTIntent = new Intent(getApplicationContext(), DeviceList.class);
+            startActivityForResult(BTIntent, DeviceList.REQUEST_CONNECT_BT);
+        } else {
+            BPrinter printer = new BPrinter(btsocket, SalesReturnReview.this);
+            FabizProvider provider = new FabizProvider(SalesReturnReview.this, false);
+            Cursor cursor = provider.query(FabizContract.Customer.TABLE_NAME, new String[]{FabizContract.Customer.COLUMN_SHOP_NAME,
+                            FabizContract.Customer.COLUMN_VAT_NO,
+                            FabizContract.Customer.COLUMN_ADDRESS_AREA,
+                            FabizContract.Customer.COLUMN_ADDRESS_ROAD,
+                            FabizContract.Customer.COLUMN_ADDRESS_BLOCK,
+                            FabizContract.Customer.COLUMN_ADDRESS_SHOP_NUM
+                    },
+                    FabizContract.Customer._ID + "=?", new String[]{custId}, null);
+            if (cursor.moveToNext()) {
+                String addressForInvoice = cursor.getString(cursor.getColumnIndex(FabizContract.Customer.COLUMN_ADDRESS_AREA));
+                if (!cursor.getString(cursor.getColumnIndex(FabizContract.Customer.COLUMN_ADDRESS_ROAD)).matches("NA")) {
+                    addressForInvoice += ", " + cursor.getString(cursor.getColumnIndex(FabizContract.Customer.COLUMN_ADDRESS_ROAD));
+                }
+                if (!cursor.getString(cursor.getColumnIndex(FabizContract.Customer.COLUMN_ADDRESS_BLOCK)).matches("NA")) {
+                    addressForInvoice += ", " + cursor.getString(cursor.getColumnIndex(FabizContract.Customer.COLUMN_ADDRESS_BLOCK));
+                }
+                if (!cursor.getString(cursor.getColumnIndex(FabizContract.Customer.COLUMN_ADDRESS_SHOP_NUM)).matches("NA")) {
+                    addressForInvoice += ", " + cursor.getString(cursor.getColumnIndex(FabizContract.Customer.COLUMN_ADDRESS_SHOP_NUM));
+                }
+
+                printer.printSalesReturnReciept(salesReturnReviewItem, cdue + "",
+                        cursor.getString(cursor.getColumnIndex(FabizContract.Customer.COLUMN_SHOP_NAME)), addressForInvoice,
+                        cursor.getString(cursor.getColumnIndex(FabizContract.Customer.COLUMN_VAT_NO)));
+            }
+        }
+    }
 }

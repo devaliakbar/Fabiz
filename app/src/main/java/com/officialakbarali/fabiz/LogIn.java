@@ -175,6 +175,7 @@ public class LogIn extends AppCompatActivity {
 
         editor.putString("currency", "BD");
         setCurrency("BD");
+        editor.putInt("app_version_no", GET_MY_APP_VERSION());
         editor.apply();
 
 

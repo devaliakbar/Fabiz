@@ -5,6 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AnimationUtils;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -12,6 +13,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.officialakbarali.fabiz.R;
+import com.officialakbarali.fabiz.customer.sale.data.Cart;
 import com.officialakbarali.fabiz.customer.sale.data.SalesReturnReviewItem;
 
 import java.util.List;
@@ -22,9 +24,15 @@ import static com.officialakbarali.fabiz.data.CommonInformation.getCurrency;
 
 public class SalesReturnReviewAdapter extends RecyclerView.Adapter<SalesReturnReviewAdapter.SalesReturnReviewViewHolder> {
     private Context mContext;
-    List<SalesReturnReviewItem> salesReturnList;
+    private List<SalesReturnReviewItem> salesReturnList;
+    private SalesReturnReviewAdapterListener mClickHandler;
 
-    public SalesReturnReviewAdapter(Context context) {
+    public interface SalesReturnReviewAdapterListener {
+        void onClick(SalesReturnReviewItem salesReturnReviewItem);
+    }
+
+    public SalesReturnReviewAdapter(Context context, SalesReturnReviewAdapterListener salesReturnReviewAdapterListener) {
+        this.mClickHandler = salesReturnReviewAdapterListener;
         this.mContext = context;
     }
 
@@ -76,7 +84,7 @@ public class SalesReturnReviewAdapter extends RecyclerView.Adapter<SalesReturnRe
         if (priceS.length() > 12) {
             holder.priceT.setText(priceS.substring(0, 8));
         } else {
-            holder.priceT.setText(priceS+ " " + getCurrency());
+            holder.priceT.setText(priceS + " " + getCurrency());
         }
 
         String qtyS = salesReturnReviewItem.getQty() + "";
@@ -90,7 +98,7 @@ public class SalesReturnReviewAdapter extends RecyclerView.Adapter<SalesReturnRe
         if (totalS.length() > 12) {
             holder.totalT.setText(totalS.substring(0, 8));
         } else {
-            holder.totalT.setText(totalS+ " " + getCurrency());
+            holder.totalT.setText(totalS + " " + getCurrency());
         }
 
         holder.unitT.setText(salesReturnReviewItem.getUnitName());
@@ -113,11 +121,20 @@ public class SalesReturnReviewAdapter extends RecyclerView.Adapter<SalesReturnRe
     class SalesReturnReviewViewHolder extends RecyclerView.ViewHolder {
         TextView billIdT, dateT, itemNameT, priceT, qtyT, totalT, returnIdT, unitT;
         LinearLayout mainParent;
+        ImageButton printSalesReturnReceip;
 
         public SalesReturnReviewViewHolder(@NonNull View itemView) {
             super(itemView);
 
             mainParent = itemView.findViewById(R.id.main_parent);
+
+            printSalesReturnReceip = itemView.findViewById(R.id.print_sales_review_receipt);
+            printSalesReturnReceip.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    mClickHandler.onClick(salesReturnList.get(getAdapterPosition()));
+                }
+            });
 
             billIdT = itemView.findViewById(R.id.sales_return_review_item_billid);
             dateT = itemView.findViewById(R.id.sales_return_review_item_date);

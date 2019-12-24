@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/main_parent"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/main_parent"
         android:layout_marginBottom="15dp"
         android:background="@drawable/button_color_main_home_icon"
         android:orientation="vertical"
@@ -28,23 +28,50 @@
             android:textColor="@color/text_color"
             tools:text="Date :20" />
 
-    <TextView
-            android:id="@+id/sales_return_review_item_billid"
-            style="@style/text_size_med"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="10dp"
-            android:textColor="@color/text_color"
-            tools:text="Date :20" />
 
-    <TextView
-            android:id="@+id/sales_return_review_item_return_id"
-            style="@style/text_size_med"
-            android:layout_width="wrap_content"
+    <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="10dp"
-            android:textColor="@color/text_color"
-            tools:text="Date :20" />
+            android:gravity="center"
+            android:orientation="horizontal">
+
+        <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+            <TextView
+                    android:id="@+id/sales_return_review_item_billid"
+                    style="@style/text_size_med"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="10dp"
+                    android:textColor="@color/text_color"
+                    tools:text="Date :20" />
+
+            <TextView
+                    android:id="@+id/sales_return_review_item_return_id"
+                    style="@style/text_size_med"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="10dp"
+                    android:textColor="@color/text_color"
+                    tools:text="Date :20" />
+
+
+        </LinearLayout>
+
+
+        <ImageButton
+                android:id="@+id/print_sales_review_receipt"
+                android:layout_width="wrap_content"
+                android:layout_height="30dp"
+                android:background="?attr/selectableItemBackground"
+                android:scaleType="fitCenter"
+                android:src="@drawable/ic_print" />
+
+    </LinearLayout>
 
 
     <View

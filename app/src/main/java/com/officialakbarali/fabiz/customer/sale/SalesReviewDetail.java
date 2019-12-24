@@ -8,8 +8,10 @@ import android.animation.Animator;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.app.TimePickerDialog;
+import android.bluetooth.BluetoothSocket;
 import android.content.ContentValues;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
@@ -40,12 +42,16 @@ import com.officialakbarali.fabiz.CommonResumeCheck;
 import com.officialakbarali.fabiz.R;
 import com.officialakbarali.fabiz.customer.sale.adapter.SalesAdapter;
 import com.officialakbarali.fabiz.customer.sale.data.Cart;
+import com.officialakbarali.fabiz.customer.sale.data.SalesReturnReviewItem;
 import com.officialakbarali.fabiz.data.db.FabizContract;
 import com.officialakbarali.fabiz.data.db.FabizProvider;
 import com.officialakbarali.fabiz.item.data.UnitData;
 import com.officialakbarali.fabiz.network.syncInfo.SetupSync;
 import com.officialakbarali.fabiz.network.syncInfo.data.SyncLogDetail;
+import com.officialakbarali.fabiz.printer.BPrinter;
+import com.officialakbarali.fabiz.printer.DeviceList;
 
+import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -53,6 +59,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
+import static com.officialakbarali.fabiz.customer.sale.Sales.cartItems;
 import static com.officialakbarali.fabiz.data.CommonInformation.GET_DATE_FORMAT_REAL;
 import static com.officialakbarali.fabiz.data.CommonInformation.TruncateDecimal;
 import static com.officialakbarali.fabiz.data.CommonInformation.convertDateToDisplayFormat;
@@ -64,7 +71,7 @@ import static com.officialakbarali.fabiz.network.syncInfo.SetupSync.OP_UPDATE;
 public class SalesReviewDetail extends AppCompatActivity implements SalesAdapter.SalesAdapterOnClickListener {
     private Toast toast;
     private String custId, billId;
-
+    List<Cart> cartItems;
     private TextView dateView, totQtyView, totalView, billIdView, discountView, returnView, currentView, paidView, dueView;
     FabizProvider fabizProvider;
 
@@ -89,6 +96,10 @@ public class SalesReviewDetail extends AppCompatActivity implements SalesAdapter
     double currentMaxLimit;
 
     //******************************************************************
+    //***
+    double cbillAmnt, cpaid, cdue;
+    String cdate;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -102,6 +113,47 @@ public class SalesReviewDetail extends AppCompatActivity implements SalesAdapter
                 getWindow().getDecorView().setSystemUiVisibility(0);
             }
         }
+
+        ImageButton printButton = findViewById(R.id.print_invoice);
+        printButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (btsocket == null) {
+                    Intent BTIntent = new Intent(getApplicationContext(), DeviceList.class);
+                    startActivityForResult(BTIntent, DeviceList.REQUEST_CONNECT_BT);
+                } else {
+                    BPrinter printer = new BPrinter(btsocket, SalesReviewDetail.this);
+                    FabizProvider provider = new FabizProvider(SalesReviewDetail.this, false);
+                    Cursor cursor = provider.query(FabizContract.Customer.TABLE_NAME, new String[]{FabizContract.Customer.COLUMN_SHOP_NAME,
+                                    FabizContract.Customer.COLUMN_VAT_NO,
+                                    FabizContract.Customer.COLUMN_ADDRESS_AREA,
+                                    FabizContract.Customer.COLUMN_ADDRESS_ROAD,
+                                    FabizContract.Customer.COLUMN_ADDRESS_BLOCK,
+                                    FabizContract.Customer.COLUMN_ADDRESS_SHOP_NUM
+                            },
+                            FabizContract.Customer._ID + "=?", new String[]{custId}, null);
+                    if (cursor.moveToNext()) {
+                        String addressForInvoice = cursor.getString(cursor.getColumnIndex(FabizContract.Customer.COLUMN_ADDRESS_AREA));
+                        if (!cursor.getString(cursor.getColumnIndex(FabizContract.Customer.COLUMN_ADDRESS_ROAD)).matches("NA")) {
+                            addressForInvoice += ", " + cursor.getString(cursor.getColumnIndex(FabizContract.Customer.COLUMN_ADDRESS_ROAD));
+                        }
+                        if (!cursor.getString(cursor.getColumnIndex(FabizContract.Customer.COLUMN_ADDRESS_BLOCK)).matches("NA")) {
+                            addressForInvoice += ", " + cursor.getString(cursor.getColumnIndex(FabizContract.Customer.COLUMN_ADDRESS_BLOCK));
+                        }
+                        if (!cursor.getString(cursor.getColumnIndex(FabizContract.Customer.COLUMN_ADDRESS_SHOP_NUM)).matches("NA")) {
+                            addressForInvoice += ", " + cursor.getString(cursor.getColumnIndex(FabizContract.Customer.COLUMN_ADDRESS_SHOP_NUM));
+                        }
+
+                        printer.printInvoice(billId, cdate, cartItems, cbillAmnt + "", cpaid + "", cdue + "",
+                                cursor.getString(cursor.getColumnIndex(FabizContract.Customer.COLUMN_SHOP_NAME)), addressForInvoice,
+                                cursor.getString(cursor.getColumnIndex(FabizContract.Customer.COLUMN_VAT_NO)));
+                    } else {
+                        showToast("Something went wrong, can't print right now");
+                    }
+                }
+            }
+        });
+
 
         fillUnitData();
 
@@ -123,6 +175,9 @@ public class SalesReviewDetail extends AppCompatActivity implements SalesAdapter
 
         custId = getIntent().getStringExtra("custId");
         billId = getIntent().getStringExtra("billId");
+        Log.i("Current Total Passed1 :", getIntent().getDoubleExtra("totDue", 0) + "");
+        cdue = getIntent().getDoubleExtra("totDue", 0);
+
 
         recyclerView = findViewById(R.id.cust_sale_recycler);
 
@@ -170,6 +225,11 @@ public class SalesReviewDetail extends AppCompatActivity implements SalesAdapter
                 , null);
 
         if (billCursor.moveToNext()) {
+            cdate = billCursor.getString(billCursor.getColumnIndexOrThrow(FabizContract.BillDetail.COLUMN_DATE));
+            cbillAmnt = billCursor.getDouble(billCursor.getColumnIndexOrThrow(FabizContract.BillDetail.COLUMN_CURRENT_TOTAL));
+            cpaid = billCursor.getDouble(billCursor.getColumnIndexOrThrow(FabizContract.BillDetail.COLUMN_PAID));
+
+
             billIdView.setText("Bill Id : " + billId);
 
             dateView.setText(billCursor.getString(billCursor.getColumnIndexOrThrow(FabizContract.BillDetail.COLUMN_DATE)));
@@ -178,7 +238,7 @@ public class SalesReviewDetail extends AppCompatActivity implements SalesAdapter
             totalView.setText("Total : " + TruncateDecimal(billCursor.getDouble(billCursor.getColumnIndexOrThrow(FabizContract.BillDetail.COLUMN_PRICE)) + "") + " " + getCurrency());
             discountView.setText("Discount On Due : " + TruncateDecimal(billCursor.getDouble(billCursor.getColumnIndexOrThrow(FabizContract.BillDetail.COLUMN_DISCOUNT)) + "") + " " + getCurrency());
 
-            currentView.setText("Current Total : " + TruncateDecimal(billCursor.getInt(billCursor.getColumnIndexOrThrow(FabizContract.BillDetail.COLUMN_CURRENT_TOTAL)) + "") + " " + getCurrency());
+            currentView.setText("Current Total : " + TruncateDecimal(billCursor.getDouble(billCursor.getColumnIndexOrThrow(FabizContract.BillDetail.COLUMN_CURRENT_TOTAL)) + "") + " " + getCurrency());
             paidView.setText("Paid Amount : " + TruncateDecimal(billCursor.getDouble(billCursor.getColumnIndexOrThrow(FabizContract.BillDetail.COLUMN_PAID)) + "") + " " + getCurrency());
             returnView.setText("Returned Amount : " + TruncateDecimal(billCursor.getDouble(billCursor.getColumnIndexOrThrow(FabizContract.BillDetail.COLUMN_RETURNED_TOTAL)) + "") + " " + getCurrency());
             dueView.setText("Due Amount : " + TruncateDecimal(billCursor.getDouble(billCursor.getColumnIndexOrThrow(FabizContract.BillDetail.COLUMN_DUE)) + "") + " " + getCurrency());
@@ -186,7 +246,7 @@ public class SalesReviewDetail extends AppCompatActivity implements SalesAdapter
     }
 
     private void setUpBillItems() {
-        List<Cart> cartItems = new ArrayList<>();
+        cartItems = new ArrayList<>();
 
         Cursor billItemsCursor = fabizProvider.query(FabizContract.Cart.TABLE_NAME
                         + " INNER JOIN " + FabizContract.ItemUnit.TABLE_NAME + " ON " + FabizContract.Cart.FULL_COLUMN_UNIT_ID +
@@ -221,9 +281,9 @@ public class SalesReviewDetail extends AppCompatActivity implements SalesAdapter
     }
 
     @Override
-    public void onClick(boolean modificationFlag,int indexToBeRemoved, Cart cartITemList) {
+    public void onClick(boolean modificationFlag, int indexToBeRemoved, Cart cartITemList) {
         if (FROM_SALES_RETURN) {
-            if(!modificationFlag){
+            if (!modificationFlag) {
                 setUpReturnPop(cartITemList);
             }
         }
@@ -437,7 +497,7 @@ public class SalesReviewDetail extends AppCompatActivity implements SalesAdapter
                     if (Double.parseDouble(priceTextP.getText().toString()) > currentPrice) {
                         showToast("Please enter the valid price for item");
                     } else {
-                        saveThisReturnedItem(values, cartITemList.getId());
+                        saveThisReturnedItem(values, cartITemList);
                     }
                 }
             }
@@ -556,7 +616,7 @@ public class SalesReviewDetail extends AppCompatActivity implements SalesAdapter
         }
     }
 
-    private void saveThisReturnedItem(ContentValues values, String cartId) {
+    private void saveThisReturnedItem(ContentValues values, Cart cartITemList) {
         NEGATIVE_DUE = false;
         List<SyncLogDetail> syncLogList = new ArrayList<>();
         FabizProvider saveProvider = new FabizProvider(this, true);
@@ -619,7 +679,7 @@ public class SalesReviewDetail extends AppCompatActivity implements SalesAdapter
                         Cursor returnUpdateToBillCursor = saveProvider.query(FabizContract.Cart.TABLE_NAME,
                                 new String[]{FabizContract.Cart._ID, FabizContract.Cart.COLUMN_RETURN_QTY}
                                 , FabizContract.Cart._ID + "=?",
-                                new String[]{cartId}, null);
+                                new String[]{cartITemList.getId()}, null);
 
                         if (returnUpdateToBillCursor.moveToNext()) {
 
@@ -646,8 +706,14 @@ public class SalesReviewDetail extends AppCompatActivity implements SalesAdapter
                                 new SetupSync(this, syncLogList, saveProvider, "Successfully Returned", OP_CODE_SALE_RETURN);
 
                                 //END HERE *****************************************************
-                                showFinalInfoDialogue(NEGATIVE_DUE, values.getAsDouble(FabizContract.SalesReturn.COLUMN_TOTAL),
-                                        dueUpdate);
+
+                                showFinalInfoDialogue(NEGATIVE_DUE, dueUpdate,
+                                        new SalesReturnReviewItem("", values.getAsString(FabizContract.SalesReturn.COLUMN_BILL_ID), values.getAsString(FabizContract.SalesReturn.COLUMN_DATE),
+                                                cartITemList.getItemId(), cartITemList.getName(), cartITemList.getBrand(), cartITemList.getCategory(),
+                                                values.getAsDouble(FabizContract.SalesReturn.COLUMN_PRICE), values.getAsInteger(FabizContract.SalesReturn.COLUMN_QTY),
+                                                values.getAsDouble(FabizContract.SalesReturn.COLUMN_TOTAL),
+                                                values.getAsString(FabizContract.SalesReturn.COLUMN_UNIT_ID)
+                                        ));
                             } else {
                                 saveProvider.finishTransaction();
                                 showToast("Something went wrong");
@@ -684,7 +750,32 @@ public class SalesReviewDetail extends AppCompatActivity implements SalesAdapter
 
     }
 
-    private void showFinalInfoDialogue(boolean NEGATIVE_DUE, double returnedAmt, double dueAmnt) {
+    private BluetoothSocket btsocket;
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        try {
+            if (btsocket != null) {
+                btsocket.close();
+                btsocket = null;
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        try {
+            btsocket = DeviceList.getSocket();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void showFinalInfoDialogue(boolean NEGATIVE_DUE, double dueAmnt, final SalesReturnReviewItem printList) {
         //TODO NEGATIVE DUE WARNING
 
         paymentDialog.dismiss();
@@ -707,6 +798,7 @@ public class SalesReviewDetail extends AppCompatActivity implements SalesAdapter
         });
 
         Button okayButton = lastDialog.findViewById(R.id.pop_up_for_payment_okay);
+        okayButton.setText("Done");
         okayButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -714,6 +806,47 @@ public class SalesReviewDetail extends AppCompatActivity implements SalesAdapter
             }
         });
 
+        Button printBtn = lastDialog.findViewById(R.id.pop_up_for_payment_add_pay);
+        printBtn.setText("Print");
+        printBtn.setVisibility(View.VISIBLE);
+        printBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (btsocket == null) {
+                    Intent BTIntent = new Intent(getApplicationContext(), DeviceList.class);
+                    startActivityForResult(BTIntent, DeviceList.REQUEST_CONNECT_BT);
+                } else {
+                    BPrinter printer = new BPrinter(btsocket, SalesReviewDetail.this);
+                    FabizProvider provider = new FabizProvider(SalesReviewDetail.this, false);
+                    Cursor cursor = provider.query(FabizContract.Customer.TABLE_NAME, new String[]{FabizContract.Customer.COLUMN_SHOP_NAME,
+                                    FabizContract.Customer.COLUMN_VAT_NO,
+                                    FabizContract.Customer.COLUMN_ADDRESS_AREA,
+                                    FabizContract.Customer.COLUMN_ADDRESS_ROAD,
+                                    FabizContract.Customer.COLUMN_ADDRESS_BLOCK,
+                                    FabizContract.Customer.COLUMN_ADDRESS_SHOP_NUM
+                            },
+                            FabizContract.Customer._ID + "=?", new String[]{custId}, null);
+                    if (cursor.moveToNext()) {
+                        String addressForInvoice = cursor.getString(cursor.getColumnIndex(FabizContract.Customer.COLUMN_ADDRESS_AREA));
+                        if (!cursor.getString(cursor.getColumnIndex(FabizContract.Customer.COLUMN_ADDRESS_ROAD)).matches("NA")) {
+                            addressForInvoice += ", " + cursor.getString(cursor.getColumnIndex(FabizContract.Customer.COLUMN_ADDRESS_ROAD));
+                        }
+                        if (!cursor.getString(cursor.getColumnIndex(FabizContract.Customer.COLUMN_ADDRESS_BLOCK)).matches("NA")) {
+                            addressForInvoice += ", " + cursor.getString(cursor.getColumnIndex(FabizContract.Customer.COLUMN_ADDRESS_BLOCK));
+                        }
+                        if (!cursor.getString(cursor.getColumnIndex(FabizContract.Customer.COLUMN_ADDRESS_SHOP_NUM)).matches("NA")) {
+                            addressForInvoice += ", " + cursor.getString(cursor.getColumnIndex(FabizContract.Customer.COLUMN_ADDRESS_SHOP_NUM));
+                        }
+
+                        printer.printSalesReturnReciept(printList, cdue + "",
+                                cursor.getString(cursor.getColumnIndex(FabizContract.Customer.COLUMN_SHOP_NAME)), addressForInvoice,
+                                cursor.getString(cursor.getColumnIndex(FabizContract.Customer.COLUMN_VAT_NO)));
+                    } else {
+                        showToast("Something went wrong, can't print right now");
+                    }
+                }
+            }
+        });
 
         final TextView dateV = lastDialog.findViewById(R.id.pop_up_for_payment_date);
 
@@ -728,7 +861,7 @@ public class SalesReviewDetail extends AppCompatActivity implements SalesAdapter
         dueLabelText.setText("Bill Due Amount");
 
         dateV.setText(": " + DcurrentTime);
-        returnedAmntV.setText(": " + TruncateDecimal(returnedAmt + ""));
+        returnedAmntV.setText(": " + TruncateDecimal(printList.getTotal() + ""));
 
         dueAmtV.setText(": " + TruncateDecimal(dueAmnt + ""));
 
@@ -768,8 +901,6 @@ public class SalesReviewDetail extends AppCompatActivity implements SalesAdapter
 
     private void setUpAnimation() {
         hideViews();
-
-
         final LinearLayout columnNameFrame = findViewById(R.id.column_name_cont);
 
         YoYo.with(Techniques.FadeInLeft).withListener(new Animator.AnimatorListener() {
