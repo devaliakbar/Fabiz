@@ -68,7 +68,11 @@ public class FabizDbHelper extends SQLiteOpenHelper {
                 + FabizContract.Customer.COLUMN_NAME + " TEXT NOT NULL, "
                 + FabizContract.Customer.COLUMN_PHONE + " TEXT NOT NULL, "
                 + FabizContract.Customer.COLUMN_EMAIL + " TEXT NOT NULL,"
-                + FabizContract.Customer.COLUMN_ADDRESS + " TEXT NOT NULL)";
+
+                + FabizContract.Customer.COLUMN_ADDRESS_AREA + " TEXT NOT NULL,"
+                + FabizContract.Customer.COLUMN_ADDRESS_ROAD + " TEXT NOT NULL,"
+                + FabizContract.Customer.COLUMN_ADDRESS_BLOCK + " TEXT NOT NULL,"
+                + FabizContract.Customer.COLUMN_ADDRESS_SHOP_NUM + " TEXT NOT NULL)";
         db.execSQL(SQL_CREATE_CUSTOMER_TABLE);
 
         //CREATING BILL DETAIL

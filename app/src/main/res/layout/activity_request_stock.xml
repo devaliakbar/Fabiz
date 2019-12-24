@@ -10,7 +10,7 @@
 
     <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="140dp"
+            android:layout_height="wrap_content"
             android:layout_marginBottom="10dp"
             android:orientation="horizontal"
             android:paddingStart="33dp"
@@ -18,47 +18,18 @@
             android:paddingEnd="33dp">
 
         <LinearLayout
-                android:id="@+id/enter_cont"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_marginEnd="18dp"
-                android:layout_weight="1"
-                android:orientation="vertical">
-
-            <ImageButton
-                    android:id="@+id/request_stock_enter_item"
-                    android:layout_width="match_parent"
-                    android:layout_height="0dp"
-                    android:layout_weight="2"
-                    android:background="@drawable/button_color_main_home_icon"
-                    android:src="@drawable/ic_pick_item_main" />
-
-            <TextView
-                    style="@style/text_size_small"
-                    android:layout_width="match_parent"
-                    android:layout_height="0dp"
-                    android:layout_marginTop="10dp"
-                    android:layout_weight="1"
-                    android:gravity="center"
-                    android:text="Enter item"
-                    android:textColor="@color/text_color" />
-
-        </LinearLayout>
-
-        <LinearLayout
                 android:id="@+id/pick_cont"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_marginEnd="18dp"
-                android:layout_weight="1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:orientation="vertical">
 
             <ImageButton
                     android:id="@+id/request_stock_pick_list"
-                    android:layout_width="match_parent"
-                    android:layout_height="0dp"
-                    android:layout_weight="2"
+                    android:layout_width="60dp"
+                    android:layout_height="60dp"
                     android:background="@drawable/button_color_main_home_icon"
+                    android:padding="7dp"
+                    android:scaleType="fitCenter"
                     android:src="@drawable/ic_pick_main" />
 
             <TextView
@@ -75,27 +46,25 @@
 
         <LinearLayout
                 android:id="@+id/clear_cont"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_marginEnd="18dp"
-                android:layout_weight="1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="end"
                 android:orientation="vertical">
 
             <ImageButton
                     android:id="@+id/clear_all"
-                    android:layout_width="match_parent"
-                    android:layout_height="0dp"
-                    android:layout_weight="2"
+                    android:layout_width="60dp"
+                    android:layout_height="60dp"
                     android:background="@drawable/button_color_main_home_icon"
+                    android:padding="14dp"
+                    android:scaleType="fitCenter"
                     android:src="@drawable/ic_sales_return_main" />
 
             <TextView
                     style="@style/text_size_small"
-                    android:layout_width="match_parent"
-                    android:layout_height="0dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
-                    android:layout_weight="1"
-                    android:gravity="center"
                     android:text="Clear all"
                     android:textColor="@color/text_color" />
 
@@ -104,10 +73,9 @@
         <LinearLayout
                 android:id="@+id/print_cont"
                 android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:visibility="gone"
-                android:orientation="vertical">
+                android:layout_height="0dp"
+                android:orientation="vertical"
+                android:visibility="visible">
 
             <ImageButton
                     android:id="@+id/request_stock_print"
@@ -129,6 +97,32 @@
 
         </LinearLayout>
 
+        <LinearLayout
+                android:id="@+id/enter_cont"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_marginEnd="18dp"
+                android:orientation="vertical">
+
+            <ImageButton
+                    android:id="@+id/request_stock_enter_item"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="2"
+                    android:background="@drawable/button_color_main_home_icon"
+                    android:src="@drawable/ic_pick_item_main" />
+
+            <TextView
+                    style="@style/text_size_small"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:text="Enter item"
+                    android:textColor="@color/text_color" />
+
+        </LinearLayout>
 
     </LinearLayout>
 

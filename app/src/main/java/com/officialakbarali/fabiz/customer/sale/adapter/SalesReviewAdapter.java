@@ -85,7 +85,7 @@ public class SalesReviewAdapter extends RecyclerView.Adapter<SalesReviewAdapter.
         if (totalS.length() > 17) {
             holder.totV.setText(totalS.substring(0, 13) + "...");
         } else {
-            holder.totV.setText(totalS+ " " + getCurrency());
+            holder.totV.setText(totalS + " " + getCurrency());
         }
 
 
@@ -93,13 +93,17 @@ public class SalesReviewAdapter extends RecyclerView.Adapter<SalesReviewAdapter.
             holder.viewB.setVisibility(View.GONE);
             holder.payButton.setVisibility(View.VISIBLE);
 
+            //
+            holder.totItemCont.setVisibility(View.GONE);
+            holder.totCont.setVisibility(View.GONE);
 
-            holder.paidCont.setVisibility(View.VISIBLE);
+
+            holder.paidCont.setVisibility(View.GONE);
             String paidS = TruncateDecimal(salesReview.getPaid() + "");
             if (paidS.length() > 13) {
                 holder.paidV.setText(paidS.substring(0, 13) + "...");
             } else {
-                holder.paidV.setText(paidS+ " " + getCurrency());
+                holder.paidV.setText(paidS + " " + getCurrency());
             }
 
             holder.dueCont.setVisibility(View.VISIBLE);
@@ -107,32 +111,32 @@ public class SalesReviewAdapter extends RecyclerView.Adapter<SalesReviewAdapter.
             if (dueS.length() > 13) {
                 holder.dueV.setText(dueS.substring(0, 13) + "...");
             } else {
-                holder.dueV.setText(dueS+ " " + getCurrency());
+                holder.dueV.setText(dueS + " " + getCurrency());
             }
 
-            holder.returnC.setVisibility(View.VISIBLE);
+            holder.returnC.setVisibility(View.GONE);
             String returnS = TruncateDecimal(salesReview.getReturnedAmount() + "");
             if (returnS.length() > 13) {
                 holder.returnV.setText(returnS.substring(0, 13) + "...");
             } else {
-                holder.returnV.setText(returnS+ " " + getCurrency());
+                holder.returnV.setText(returnS + " " + getCurrency());
             }
 
 
-            holder.currentCont.setVisibility(View.VISIBLE);
+            holder.currentCont.setVisibility(View.GONE);
             String currentTotalS = TruncateDecimal(salesReview.getCurrentTotal() + "");
             if (currentTotalS.length() > 13) {
                 holder.cTotalV.setText(currentTotalS.substring(0, 13) + "...");
             } else {
-                holder.cTotalV.setText(currentTotalS+ " " + getCurrency());
+                holder.cTotalV.setText(currentTotalS + " " + getCurrency());
             }
 
-            holder.discCont.setVisibility(View.VISIBLE);
+            holder.discCont.setVisibility(View.GONE);
             String discountS = TruncateDecimal(salesReview.getDiscount() + "");
             if (discountS.length() > 13) {
                 holder.cDiscountV.setText(discountS.substring(0, 13) + "...");
             } else {
-                holder.cDiscountV.setText(discountS+ " " + getCurrency());
+                holder.cDiscountV.setText(discountS + " " + getCurrency());
             }
         }
     }
@@ -158,10 +162,10 @@ public class SalesReviewAdapter extends RecyclerView.Adapter<SalesReviewAdapter.
 
         Button payButton;
 
-        LinearLayout returnC, discCont, currentCont, paidCont, dueCont;
+        LinearLayout returnC, discCont, currentCont, paidCont, dueCont, totCont, totItemCont;
+
         public SalesReviewHolder(@NonNull View itemView) {
             super(itemView);
-
 
 
             mainParent = itemView.findViewById(R.id.main_parent);
@@ -178,6 +182,11 @@ public class SalesReviewAdapter extends RecyclerView.Adapter<SalesReviewAdapter.
             cTotalV = itemView.findViewById(R.id.sales_review_view_current_total);
 
             cDiscountV = itemView.findViewById(R.id.sales_review_view_discount);
+
+
+            totCont = itemView.findViewById(R.id.sales_review_tot_cont);
+            totItemCont = itemView.findViewById(R.id.sales_review_tot_item_cont);
+
 
             viewB = itemView.findViewById(R.id.sales_review_view_view);
             viewB.setOnClickListener(new View.OnClickListener() {

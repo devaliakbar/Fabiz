@@ -114,8 +114,7 @@
                     android:id="@+id/cust_home_telephone"
                     style="@style/text_size_med"
                     android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
+                    android:layout_height="0dp"
                     android:drawableStart="@drawable/ic_telephone"
                     android:drawablePadding="7dp"
                     android:textColor="@color/pure_white" />

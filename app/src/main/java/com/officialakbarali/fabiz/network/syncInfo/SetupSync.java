@@ -29,22 +29,32 @@ public class SetupSync {
 
     //PUBLIC STRING FOR OPERATION
     public static String OP_CODE_ADD_CUSTOMER = "ADD_CUST";
+
     public static String OP_CODE_SALE = "SALE";
+    public static String OP_CODE_SALE_PAID_STACK = "SALE_STACK";
+
     public static String OP_CODE_PAY = "PAY";
+    public static String OP_CODE_PAY_PAID_STACK = "PAY_STACK";
+
     public static String OP_CODE_SALE_RETURN = "SALE_RETURN";
     //***************************
 
 
-    private List<SyncLogDetail> syncLogList;
+    private List<SyncLogDetail> syncLogListFromMain;
     private Context context;
     private FabizProvider provider;
 
     public SetupSync(Context context, List<SyncLogDetail> syncLogList, FabizProvider provider, String successMsg, String opCode) {
         this.context = context;
-        this.syncLogList = syncLogList;
+        this.syncLogListFromMain = syncLogList;
         this.provider = provider;
 
-        addCurrentDataToSyncTable(successMsg, opCode);
+        if (opCode.matches(OP_CODE_SALE_PAID_STACK) || opCode.matches(OP_CODE_PAY_PAID_STACK)) {
+            paymentStackaddCurrentDataToSyncTable(successMsg);
+        } else {
+            addCurrentDataToSyncTable(syncLogListFromMain, successMsg, opCode, null);
+        }
+
 
         if (isNetworkConnected()) {
             SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
@@ -63,9 +73,15 @@ public class SetupSync {
         return cm.getActiveNetworkInfo() != null && cm.getActiveNetworkInfo().isConnected();
     }
 
-    private void addCurrentDataToSyncTable(String successMsg, String opCode) {
-        Date date = new Date();
-        String timeStampToInsert = date.getTime() + "";
+    private void addCurrentDataToSyncTable(List<SyncLogDetail> syncLogList, String successMsg, String opCode, String timeFoTrans) {
+        String timeStampToInsert;
+        if (timeFoTrans == null) {
+            Date date = new Date();
+            timeStampToInsert = date.getTime() + "";
+        } else {
+            timeStampToInsert = timeFoTrans;
+        }
+
         try {
             int i = 0;
             while (i < syncLogList.size()) {
@@ -78,7 +94,7 @@ public class SetupSync {
                 long id = provider.insert(FabizContract.SyncLog.TABLE_NAME, values);
 
                 if (id > 0) {
-                    Log.i("SetupSync", "Sync Row Created Id:" + id);
+                    Log.i("SetupSync", "Sync Row Created Id:" + id + " , TransactionId :" + timeStampToInsert);
                 } else {
                     Log.i("SetupSync", "FAILED IN SAVING");
                     Toast.makeText(context, "Something went wrong,please report this to customer care", Toast.LENGTH_SHORT).show();
@@ -89,9 +105,12 @@ public class SetupSync {
 
             if (i == syncLogList.size()) {
                 //********TRANSACTION SUCCESSFUL
-                Toast.makeText(context, successMsg, Toast.LENGTH_SHORT).show();
-                Log.i("SetupSync", "SUCCESSFULLY COMPLETED");
-                provider.successfulTransaction();
+                if (timeFoTrans == null) {
+                    Toast.makeText(context, successMsg, Toast.LENGTH_SHORT).show();
+                    Log.i("SetupSync", "SUCCESSFULLY COMPLETED");
+                    provider.successfulTransaction();
+                }
+
             }
 
         } catch (Error e) {
@@ -99,7 +118,33 @@ public class SetupSync {
             Toast.makeText(context, "Something went wrong,please report this to customer care", Toast.LENGTH_SHORT).show();
         } finally {
             //******TRANSACTION FINISH
-            provider.finishTransaction();
+            if (timeFoTrans == null) {
+                provider.finishTransaction();
+            }
         }
+    }
+
+    private void paymentStackaddCurrentDataToSyncTable(String successMsg) {
+        Date date = new Date();
+        long timeFoTrans = date.getTime();
+        int i = 0;
+        while (i < syncLogListFromMain.size()) {
+            if (syncLogListFromMain.get(i).getTableName().matches(FabizContract.BillDetail.TABLE_NAME)) {
+                break;
+            }
+            List<SyncLogDetail> tempList = syncLogListFromMain.subList(i, i + 2);
+            addCurrentDataToSyncTable(tempList, successMsg, OP_CODE_PAY, timeFoTrans + "");
+            timeFoTrans += 10;
+            i += 2;
+        }
+        //THIS MEAN ,IT IS FROM SALES
+        if (i < syncLogListFromMain.size()) {
+            List<SyncLogDetail> tempList = syncLogListFromMain.subList(i, syncLogListFromMain.size());
+            addCurrentDataToSyncTable(tempList, successMsg, OP_CODE_SALE, timeFoTrans + "");
+        }
+        Toast.makeText(context, successMsg, Toast.LENGTH_SHORT).show();
+        Log.i("SetupSync", "Successfully completed payment stack case");
+        provider.successfulTransaction();
+        provider.finishTransaction();
     }
 }

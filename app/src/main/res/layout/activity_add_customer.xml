@@ -99,7 +99,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginBottom="20dp"
                         android:background="@drawable/rounded_white_editext"
-                        android:hint="Enter Shop Name"
+                        android:hint="Enter Shop Name*"
                         android:inputType="text"
                         android:maxLines="1"
                         android:padding="20dp"
@@ -120,7 +120,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginBottom="20dp"
                         android:background="@drawable/rounded_white_editext"
-                        android:hint="Enter Phone"
+                        android:hint="Enter Phone*"
                         android:inputType="phone"
                         android:maxLines="1"
                         android:padding="20dp"
@@ -142,7 +142,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginBottom="20dp"
                         android:background="@drawable/rounded_white_editext"
-                        android:hint="Enter Contact Person Name"
+                        android:hint="Contact Person Name"
                         android:inputType="text"
                         android:maxLines="1"
                         android:padding="20dp"
@@ -150,20 +150,26 @@
                         android:visibility="visible" />
             </com.google.android.material.textfield.TextInputLayout>
 
+            <TextView
+                    android:id="@+id/address_label_id"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Address" />
 
             <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/addc"
+                    android:id="@+id/addAreac"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="17dp">
 
                 <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/cust_add_address"
+                        android:id="@+id/cust_add_addressArea"
                         style="@style/text_size_med"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginBottom="20dp"
                         android:background="@drawable/rounded_white_editext"
-                        android:hint="Enter Address"
+                        android:hint="Area*"
                         android:inputType="text"
                         android:maxLines="1"
                         android:padding="20dp"
@@ -172,9 +178,73 @@
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/telec"
+                    android:id="@+id/addRoadc"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="17dp">
+
+                <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/cust_add_addressRoad"
+                        style="@style/text_size_med"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="20dp"
+                        android:background="@drawable/rounded_white_editext"
+                        android:hint="Road"
+                        android:inputType="text"
+                        android:maxLines="1"
+                        android:padding="20dp"
+                        android:textColor="@color/text_color"
+                        android:visibility="visible" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/addBlockc"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="17dp">
+
+                <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/cust_add_addressBlock"
+                        style="@style/text_size_med"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="20dp"
+                        android:background="@drawable/rounded_white_editext"
+                        android:hint="Block"
+                        android:inputType="text"
+                        android:maxLines="1"
+                        android:padding="20dp"
+                        android:textColor="@color/text_color"
+                        android:visibility="visible" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/addShopNumc"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="17dp">
+
+                <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/cust_add_addressShopNum"
+                        style="@style/text_size_med"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="20dp"
+                        android:background="@drawable/rounded_white_editext"
+                        android:hint="Shop Number"
+                        android:inputType="text"
+                        android:maxLines="1"
+                        android:padding="20dp"
+                        android:textColor="@color/text_color"
+                        android:visibility="visible" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+
+            <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/telec"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp">
 
                 <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/cust_add_telephone"

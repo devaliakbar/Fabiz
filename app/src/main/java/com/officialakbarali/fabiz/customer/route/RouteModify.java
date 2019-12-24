@@ -146,7 +146,11 @@ public class RouteModify extends AppCompatActivity implements CustomerAdapter.Cu
     private void showCustomer(String selection, String[] selectionArg) {
         FabizProvider provider = new FabizProvider(this, false);
         String[] projection = {FabizContract.Customer._ID, FabizContract.Customer.COLUMN_NAME, FabizContract.Customer.COLUMN_PHONE,
-                FabizContract.Customer.COLUMN_EMAIL, FabizContract.Customer.COLUMN_ADDRESS, FabizContract.Customer.COLUMN_DAY
+                FabizContract.Customer.COLUMN_EMAIL, FabizContract.Customer.COLUMN_ADDRESS_AREA,
+                FabizContract.Customer.COLUMN_ADDRESS_ROAD,
+                FabizContract.Customer.COLUMN_ADDRESS_BLOCK,
+                FabizContract.Customer.COLUMN_ADDRESS_SHOP_NUM
+                , FabizContract.Customer.COLUMN_DAY
         };
         Cursor custCursor = provider.query(FabizContract.Customer.TABLE_NAME, projection,
                 selection, selectionArg
@@ -154,11 +158,21 @@ public class RouteModify extends AppCompatActivity implements CustomerAdapter.Cu
 
         List<CustomerDetail> customerList = new ArrayList<>();
         while (custCursor.moveToNext()) {
+            String addressForInvoice = custCursor.getString(custCursor.getColumnIndex(FabizContract.Customer.COLUMN_ADDRESS_AREA));
+            if (!custCursor.getString(custCursor.getColumnIndex(FabizContract.Customer.COLUMN_ADDRESS_ROAD)).matches("NA")) {
+                addressForInvoice += ", " + custCursor.getString(custCursor.getColumnIndex(FabizContract.Customer.COLUMN_ADDRESS_ROAD));
+            }
+            if (!custCursor.getString(custCursor.getColumnIndex(FabizContract.Customer.COLUMN_ADDRESS_BLOCK)).matches("NA")) {
+                addressForInvoice += ", " + custCursor.getString(custCursor.getColumnIndex(FabizContract.Customer.COLUMN_ADDRESS_BLOCK));
+            }
+            if (!custCursor.getString(custCursor.getColumnIndex(FabizContract.Customer.COLUMN_ADDRESS_SHOP_NUM)).matches("NA")) {
+                addressForInvoice += ", " + custCursor.getString(custCursor.getColumnIndex(FabizContract.Customer.COLUMN_ADDRESS_SHOP_NUM));
+            }
             customerList.add(new CustomerDetail(custCursor.getString(custCursor.getColumnIndexOrThrow(FabizContract.Customer._ID)),
                     custCursor.getString(custCursor.getColumnIndexOrThrow(FabizContract.Customer.COLUMN_NAME)),
                     custCursor.getString(custCursor.getColumnIndexOrThrow(FabizContract.Customer.COLUMN_PHONE)),
                     custCursor.getString(custCursor.getColumnIndexOrThrow(FabizContract.Customer.COLUMN_EMAIL)),
-                    custCursor.getString(custCursor.getColumnIndexOrThrow(FabizContract.Customer.COLUMN_ADDRESS)),
+                    addressForInvoice,
                     custCursor.getString(custCursor.getColumnIndexOrThrow(FabizContract.Customer.COLUMN_DAY))
             ));
         }
@@ -186,10 +200,10 @@ public class RouteModify extends AppCompatActivity implements CustomerAdapter.Cu
                 caseSelection = FabizContract.Customer.COLUMN_EMAIL;
                 break;
             case "Address":
-                caseSelection = FabizContract.Customer.COLUMN_ADDRESS;
+                caseSelection = FabizContract.Customer.COLUMN_ADDRESS_AREA;
                 break;
             default:
-                caseSelection = FabizContract.Customer.COLUMN_NAME;
+                caseSelection = FabizContract.Customer.COLUMN_SHOP_NAME;
         }
 
         return caseSelection + " LIKE ?";

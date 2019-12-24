@@ -6,15 +6,21 @@ import androidx.recyclerview.widget.RecyclerView;
 
 
 import android.animation.Animator;
+import android.app.Dialog;
 import android.database.Cursor;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.Window;
 import android.widget.Button;
 import android.widget.EditText;
 
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
 
@@ -83,6 +89,60 @@ public class RequestItem extends AppCompatActivity implements PickItemAdapter.It
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setHasFixedSize(true);
         recyclerView.setAdapter(itemAdapter);
+
+
+        ImageButton enterItemButton = findViewById(R.id.request_stock_enter_item);
+        enterItemButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                enterItemDialogue();
+            }
+        });
+
+    }
+
+
+
+    private void enterItemDialogue() {
+        final Dialog dialog = new Dialog(this);
+        dialog.setContentView(R.layout.pop_up_enter_item_request);
+
+        //SETTING SCREEN WIDTH
+        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        Window window = dialog.getWindow();
+        window.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        //*************
+
+        final EditText quantityText = dialog.findViewById(R.id.pop_up_item_request_qty);
+        quantityText.setText("1");
+        final EditText nameText = dialog.findViewById(R.id.pop_up_item_request_name);
+        nameText.setText("");
+
+        Button addButton = dialog.findViewById(R.id.pop_up_item_request_add);
+        addButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String nameS = nameText.getText().toString().trim().toUpperCase();
+                String qtyS = quantityText.getText().toString().trim();
+
+                if (nameS.matches("") || qtyS.matches("")) {
+                    showToast("Some fields are empty");
+                } else {
+                    itemsForRequest.add(new com.officialakbarali.fabiz.requestStock.data.RequestItem(nameS, qtyS));
+                    dialog.dismiss();
+                }
+            }
+        });
+
+
+        Button cancelDialogue = dialog.findViewById(R.id.pop_up_item_request_cancel);
+        cancelDialogue.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+            }
+        });
+        dialog.show();
     }
 
     @Override
@@ -264,6 +324,8 @@ public class RequestItem extends AppCompatActivity implements PickItemAdapter.It
         super.onPause();
         recyclerView.setVisibility(View.INVISIBLE);
         searchEditText.setVisibility(View.INVISIBLE);
+        LinearLayout addCont = findViewById(R.id.enter_cont);
+        addCont.setVisibility(View.INVISIBLE);
         displayEmptyView(false);
     }
 
@@ -271,6 +333,9 @@ public class RequestItem extends AppCompatActivity implements PickItemAdapter.It
     private void setUpAnimation() {
         recyclerView.setVisibility(View.INVISIBLE);
         searchEditText.setVisibility(View.INVISIBLE);
+
+        final LinearLayout addCont = findViewById(R.id.enter_cont);
+
 
         YoYo.with(Techniques.SlideInLeft).withListener(new Animator.AnimatorListener() {
             @Override
@@ -280,6 +345,9 @@ public class RequestItem extends AppCompatActivity implements PickItemAdapter.It
 
             @Override
             public void onAnimationEnd(Animator animation) {
+                addCont.setVisibility(View.VISIBLE);
+                YoYo.with(Techniques.FadeInDown).duration(400).repeat(0).playOn(addCont);
+
                 searchEditText.setVisibility(View.VISIBLE);
                 YoYo.with(Techniques.FadeInDown).withListener(new Animator.AnimatorListener() {
                     @Override

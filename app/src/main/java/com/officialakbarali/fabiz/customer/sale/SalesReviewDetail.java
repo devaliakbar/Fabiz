@@ -221,9 +221,11 @@ public class SalesReviewDetail extends AppCompatActivity implements SalesAdapter
     }
 
     @Override
-    public void onClick(int indexToBeRemoved, Cart cartITemList) {
+    public void onClick(boolean modificationFlag,int indexToBeRemoved, Cart cartITemList) {
         if (FROM_SALES_RETURN) {
-            setUpReturnPop(cartITemList);
+            if(!modificationFlag){
+                setUpReturnPop(cartITemList);
+            }
         }
     }
 

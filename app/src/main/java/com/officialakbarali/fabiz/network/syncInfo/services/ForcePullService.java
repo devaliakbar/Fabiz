@@ -353,7 +353,12 @@ public class ForcePullService extends Service {
                 values.put(FabizContract.Customer.COLUMN_DAY, numberOfDay + "");
                 values.put(FabizContract.Customer.COLUMN_PHONE, obj.getString(FabizContract.Customer.COLUMN_PHONE));
                 values.put(FabizContract.Customer.COLUMN_EMAIL, obj.getString(FabizContract.Customer.COLUMN_EMAIL));
-                values.put(FabizContract.Customer.COLUMN_ADDRESS, obj.getString(FabizContract.Customer.COLUMN_ADDRESS));
+
+                values.put(FabizContract.Customer.COLUMN_ADDRESS_AREA, obj.getString(FabizContract.Customer.COLUMN_ADDRESS_AREA));
+                values.put(FabizContract.Customer.COLUMN_ADDRESS_BLOCK, obj.getString(FabizContract.Customer.COLUMN_ADDRESS_BLOCK));
+                values.put(FabizContract.Customer.COLUMN_ADDRESS_SHOP_NUM, obj.getString(FabizContract.Customer.COLUMN_ADDRESS_SHOP_NUM));
+                values.put(FabizContract.Customer.COLUMN_ADDRESS_ROAD, obj.getString(FabizContract.Customer.COLUMN_ADDRESS_ROAD));
+
                 values.put(FabizContract.Customer.COLUMN_TELEPHONE, obj.getString(FabizContract.Customer.COLUMN_TELEPHONE));
                 values.put(FabizContract.Customer.COLUMN_VAT_NO, obj.getString(FabizContract.Customer.COLUMN_VAT_NO));
                 provider.insert(FabizContract.Customer.TABLE_NAME, values);

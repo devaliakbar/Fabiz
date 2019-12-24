@@ -3,7 +3,7 @@
         xmlns:tool="http://schemas.android.com/tools"
         android:id="@+id/item_home_view"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="95dp"
         android:layout_marginBottom="15dp"
         android:background="@drawable/button_color_main_home_icon"
         android:orientation="vertical"
@@ -24,7 +24,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:textColor="@color/text_color"
-                tool:text="WASHING POWDER" />
+                tool:text="WASHING POWDERhghgfhgfhgfh" />
 
         <TextView
                 android:id="@+id/price"
@@ -41,6 +41,7 @@
 
 
     <TextView
+            android:visibility="invisible"
             android:id="@+id/id"
             style="@style/text_size_med"
             android:layout_width="wrap_content"
@@ -50,12 +51,14 @@
 
 
     <View
+            android:visibility="invisible"
             android:layout_width="match_parent"
             android:layout_height="1.5dp"
             android:layout_marginBottom="10dp"
             android:background="@color/app_background" />
 
     <TextView
+            android:visibility="invisible"
             android:id="@+id/brand"
             style="@style/text_size_med"
             android:layout_width="wrap_content"

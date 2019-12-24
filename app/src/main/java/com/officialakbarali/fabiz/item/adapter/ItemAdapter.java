@@ -55,9 +55,9 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ItemViewHolder
 
         String name = itemDetail.getName();
         if (name.length() > 40) {
-            holder.itemName.setText("Name: " + name.substring(0, 36) + "...");
+            holder.itemName.setText(name.substring(0, 36) + "...");
         } else {
-            holder.itemName.setText("Name: " + name);
+            holder.itemName.setText( name);
         }
 
         String brand = itemDetail.getBrand();

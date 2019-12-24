@@ -26,11 +26,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
@@ -40,6 +43,8 @@ import com.daimajia.androidanimations.library.YoYo;
 import com.officialakbarali.fabiz.CommonResumeCheck;
 import com.officialakbarali.fabiz.LogIn;
 import com.officialakbarali.fabiz.data.barcode.FabizBarcode;
+import com.officialakbarali.fabiz.item.data.ItemDetail;
+import com.officialakbarali.fabiz.item.data.UnitData;
 import com.officialakbarali.fabiz.network.syncInfo.SetupSync;
 import com.officialakbarali.fabiz.network.syncInfo.data.SyncLogDetail;
 import com.officialakbarali.fabiz.R;
@@ -68,6 +73,7 @@ import static com.officialakbarali.fabiz.data.CommonInformation.getCurrency;
 import static com.officialakbarali.fabiz.data.barcode.FabizBarcode.FOR_ITEM;
 import static com.officialakbarali.fabiz.network.syncInfo.SetupSync.OP_CODE_PAY;
 import static com.officialakbarali.fabiz.network.syncInfo.SetupSync.OP_CODE_SALE;
+import static com.officialakbarali.fabiz.network.syncInfo.SetupSync.OP_CODE_SALE_PAID_STACK;
 import static com.officialakbarali.fabiz.network.syncInfo.SetupSync.OP_INSERT;
 import static com.officialakbarali.fabiz.network.syncInfo.SetupSync.OP_UPDATE;
 
@@ -229,8 +235,16 @@ public class Sales extends AppCompatActivity implements SalesAdapter.SalesAdapte
     }
 
     @Override
-    public void onClick(int indexToBeRemoved, Cart cartItemsF) {
-        cartItems.remove(indexToBeRemoved);
+    public void onClick(boolean modificationFlag, int indexToBeRemoved, Cart cartItemsF) {
+        if (modificationFlag) {
+            setUpCartModification(indexToBeRemoved, cartItems.get(indexToBeRemoved));
+        } else {
+            cartItems.remove(indexToBeRemoved);
+            setUpAdapterData();
+        }
+    }
+
+    private void setUpAdapterData() {
         salesAdapter.swapAdapter(cartItems);
         if (cartItems.size() > 0) {
             displayEmptyView(false);
@@ -308,6 +322,7 @@ public class Sales extends AppCompatActivity implements SalesAdapter.SalesAdapte
     }
 
     private void saveThisBill() {
+        boolean paymentStackFlag = false;
         double enteredAmntForUpdate = getEnteredAmnt();
         double currentBillMaxAmt = enteredAmntForUpdate;
         FabizProvider provider = new FabizProvider(this, true);
@@ -319,10 +334,12 @@ public class Sales extends AppCompatActivity implements SalesAdapter.SalesAdapte
                 //SET BALANCE AMOUNT TO ANOTHER BILL
                 if (enteredAmntForUpdate > totAmountToSave) {
                     currentBillMaxAmt = totAmountToSave;
-                    if (setUpBalanceAmntToAnotherBill(provider, syncLogList, enteredAmntForUpdate - totAmountToSave) == null) {
+                    syncLogList = setUpBalanceAmntToAnotherBill(provider, syncLogList, enteredAmntForUpdate - totAmountToSave);
+                    if (syncLogList == null) {
                         provider.finishTransaction();
                         return;
                     }
+                    paymentStackFlag= true;
                 }
             }
             double dueAmount = totAmountToSave - currentBillMaxAmt;
@@ -430,7 +447,12 @@ public class Sales extends AppCompatActivity implements SalesAdapter.SalesAdapte
                     if (insertIdPayment > 0) {
 
                         //DONE**********************************************
-                        new SetupSync(this, syncLogList, provider, "Successfully Saved.", OP_CODE_SALE);
+                        if(paymentStackFlag){
+                            new SetupSync(this, syncLogList, provider, "Successfully Saved.", OP_CODE_SALE_PAID_STACK);
+                        }else{
+                            new SetupSync(this, syncLogList, provider, "Successfully Saved.", OP_CODE_SALE);
+                        }
+
                         showDialogueInfo(totAmountToSave, enteredAmntForUpdate, currentBillMaxAmt);
 
                     } else {
@@ -485,12 +507,28 @@ public class Sales extends AppCompatActivity implements SalesAdapter.SalesAdapte
                 } else {
                     BPrinter printer = new BPrinter(btsocket, Sales.this);
                     FabizProvider provider = new FabizProvider(Sales.this, false);
-                    Cursor cursor = provider.query(FabizContract.Customer.TABLE_NAME, new String[]{FabizContract.Customer.COLUMN_NAME,
-                                    FabizContract.Customer.COLUMN_VAT_NO, FabizContract.Customer.COLUMN_ADDRESS},
+                    Cursor cursor = provider.query(FabizContract.Customer.TABLE_NAME, new String[]{FabizContract.Customer.COLUMN_SHOP_NAME,
+                                    FabizContract.Customer.COLUMN_VAT_NO,
+                                    FabizContract.Customer.COLUMN_ADDRESS_AREA,
+                                    FabizContract.Customer.COLUMN_ADDRESS_ROAD,
+                                    FabizContract.Customer.COLUMN_ADDRESS_BLOCK,
+                                    FabizContract.Customer.COLUMN_ADDRESS_SHOP_NUM
+                            },
                             FabizContract.Customer._ID + "=?", new String[]{custId}, null);
                     if (cursor.moveToNext()) {
+                        String addressForInvoice = cursor.getString(cursor.getColumnIndex(FabizContract.Customer.COLUMN_ADDRESS_AREA));
+                        if (!cursor.getString(cursor.getColumnIndex(FabizContract.Customer.COLUMN_ADDRESS_ROAD)).matches("NA")) {
+                            addressForInvoice += ", " + cursor.getString(cursor.getColumnIndex(FabizContract.Customer.COLUMN_ADDRESS_ROAD));
+                        }
+                        if (!cursor.getString(cursor.getColumnIndex(FabizContract.Customer.COLUMN_ADDRESS_BLOCK)).matches("NA")) {
+                            addressForInvoice += ", " + cursor.getString(cursor.getColumnIndex(FabizContract.Customer.COLUMN_ADDRESS_BLOCK));
+                        }
+                        if (!cursor.getString(cursor.getColumnIndex(FabizContract.Customer.COLUMN_ADDRESS_SHOP_NUM)).matches("NA")) {
+                            addressForInvoice += ", " + cursor.getString(cursor.getColumnIndex(FabizContract.Customer.COLUMN_ADDRESS_SHOP_NUM));
+                        }
+
                         printer.printInvoice(idToInsertBill, currentTime, cartItems, billAmt + "", entAmt + "", currentDue + "",
-                                cursor.getString(cursor.getColumnIndex(FabizContract.Customer.COLUMN_NAME)), cursor.getString(cursor.getColumnIndex(FabizContract.Customer.COLUMN_ADDRESS)),
+                                cursor.getString(cursor.getColumnIndex(FabizContract.Customer.COLUMN_SHOP_NAME)), addressForInvoice,
                                 cursor.getString(cursor.getColumnIndex(FabizContract.Customer.COLUMN_VAT_NO)));
                     } else {
                         showToast("Something went wrong, can't print right now");
@@ -818,5 +856,194 @@ public class Sales extends AppCompatActivity implements SalesAdapter.SalesAdapte
             }
         }
         return syncLogList;
+    }
+
+
+    private void setUpCartModification(final int indexToBeDelete, final Cart itemDetail) {
+
+        final double currentItemPrice = fillUnitDataAndGetPrice(itemDetail);
+
+        if (currentItemPrice == 0) {
+            showToast("Something went wrong");
+            return;
+        }
+
+        final Dialog dialog = new Dialog(this);
+        dialog.setContentView(R.layout.pop_up_customer_sale_item_qty);
+
+
+        //SETTING SCREEN WIDTH
+        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        Window window = dialog.getWindow();
+        window.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        //*************
+
+        final TextView labelText = dialog.findViewById(R.id.cust_sale_add_item_label_pop);
+        labelText.setText(String.format("%s / %s / %s", itemDetail.getName(), itemDetail.getBrand(), itemDetail.getCategory()));
+
+        final EditText priceText = dialog.findViewById(R.id.cust_sale_add_item_price);
+        priceText.setText(TruncateDecimal(currentItemPrice + ""));
+        final EditText quantityText = dialog.findViewById(R.id.cust_sale_add_item_qty);
+        quantityText.setText("1");
+        final TextView totalText = dialog.findViewById(R.id.cust_sale_add_item_total);
+        totalText.setText(TruncateDecimal(currentItemPrice + ""));
+
+        priceText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                String priceS = priceText.getText().toString().trim();
+                String qtyS = quantityText.getText().toString().trim();
+                String totS = totalText.getText().toString().trim();
+
+                if (conditionsForDialogue(priceS, qtyS, totS)) {
+                    double priceToCart = Double.parseDouble(priceS);
+                    int quantityToCart = Integer.parseInt(qtyS);
+                    double totalToCart = priceToCart * quantityToCart;
+                    totalText.setText(TruncateDecimal(totalToCart + ""));
+                }
+            }
+        });
+
+        quantityText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                String priceS = priceText.getText().toString().trim();
+                String qtyS = quantityText.getText().toString().trim();
+                String totS = totalText.getText().toString().trim();
+
+                if (conditionsForDialogue(priceS, qtyS, totS)) {
+                    double priceToCart = Double.parseDouble(priceS);
+                    int quantityToCart = Integer.parseInt(qtyS);
+                    double totalToCart = priceToCart * quantityToCart;
+                    totalText.setText(TruncateDecimal(totalToCart + ""));
+                }
+            }
+        });
+
+
+        Button addItemButton = dialog.findViewById(R.id.cust_sale_add_item_add);
+        addItemButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                String priceS = priceText.getText().toString().trim();
+                String qtyS = quantityText.getText().toString().trim();
+                String totS = totalText.getText().toString().trim();
+                if (conditionsForDialogue(priceS, qtyS, totS)) {
+                    cartItems.remove(indexToBeDelete);
+                    cartItems.add(new Cart("0", "0", itemDetail.getItemId(), myUnitData.getId(), myUnitData.getUnitName(), itemDetail.getName(), itemDetail.getBrand(), itemDetail.getCategory(),
+                            Double.parseDouble(priceS), Integer.parseInt(qtyS), Double.parseDouble(totS), 0));
+                    setUpAdapterData();
+                    dialog.dismiss();
+                } else {
+                    showToast("Please enter valid number");
+                }
+            }
+        });
+
+        Button cancelDialogue = dialog.findViewById(R.id.cust_sale_add_item_cancel);
+        cancelDialogue.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+            }
+        });
+
+
+        //**************************************SETTING UP SPINNER
+        List<String> spinnerData = new ArrayList<>();
+        for (int i = 0; i < unitData.size(); i++) {
+            UnitData temp = unitData.get(i);
+            spinnerData.add(temp.getUnitName());
+        }
+
+        final Spinner unitS = dialog.findViewById(R.id.spinner_unit);
+        unitS.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
+                myUnitData = unitData.get(position);
+                double iPrice = currentItemPrice * myUnitData.getQty();
+                priceText.setText(TruncateDecimal(iPrice + ""));
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parentView) {
+                // your code here
+            }
+
+        });
+
+        ArrayAdapter<String> spinnerAdapter = new ArrayAdapter<String>(getBaseContext(), R.layout.custom_spinner_item, spinnerData);
+        spinnerAdapter.setDropDownViewResource(R.layout.custom_spinner_item);
+        unitS.setAdapter(spinnerAdapter);
+
+        dialog.show();
+    }
+
+    private double fillUnitDataAndGetPrice(Cart itemsDetailForOp) {
+        FabizProvider providerForUnitFetch = new FabizProvider(this, false);
+        Cursor cursor = providerForUnitFetch.query(FabizContract.ItemUnit.TABLE_NAME, new String[]{FabizContract.ItemUnit.FULL_COLUMN_ID, FabizContract.ItemUnit.COLUMN_UNIT_NAME,
+                FabizContract.ItemUnit.COLUMN_QTY}, null, null, null);
+        unitData = new ArrayList<>();
+        while (cursor.moveToNext()) {
+            if (cursor.getString(cursor.getColumnIndexOrThrow(FabizContract.ItemUnit._ID)).matches(itemsDetailForOp.getUnitId())) {
+                unitData.add(0, new UnitData(cursor.getString(cursor.getColumnIndexOrThrow(FabizContract.ItemUnit._ID)),
+                        cursor.getString(cursor.getColumnIndexOrThrow(FabizContract.ItemUnit.COLUMN_UNIT_NAME)),
+                        cursor.getInt(cursor.getColumnIndexOrThrow(FabizContract.ItemUnit.COLUMN_QTY))));
+            } else {
+                unitData.add(new UnitData(cursor.getString(cursor.getColumnIndexOrThrow(FabizContract.ItemUnit._ID)),
+                        cursor.getString(cursor.getColumnIndexOrThrow(FabizContract.ItemUnit.COLUMN_UNIT_NAME)),
+                        cursor.getInt(cursor.getColumnIndexOrThrow(FabizContract.ItemUnit.COLUMN_QTY))));
+            }
+        }
+        myUnitData = unitData.get(0);
+
+        cursor = providerForUnitFetch.query(FabizContract.Item.TABLE_NAME, new String[]{FabizContract.Item.COLUMN_PRICE, FabizContract.Item.COLUMN_UNIT_ID}, FabizContract.Item._ID + "=?",
+                new String[]{itemsDetailForOp.getItemId()}, null);
+        if (cursor.moveToNext()) {
+            return cursor.getDouble(cursor.getColumnIndexOrThrow(FabizContract.Item.COLUMN_PRICE));
+        }
+        return 0;
+    }
+
+    List<UnitData> unitData;
+
+    UnitData myUnitData;
+
+    private boolean conditionsForDialogue(String s1, String s2, String s3) {
+        if (s1.matches("") || s2.matches("") ||
+                s3.matches("")) {
+            return false;
+        } else {
+            try {
+                double priceToCart = Double.parseDouble(s1);
+                int quantityToCart = Integer.parseInt(s2);
+                double totalToCart = Double.parseDouble(s3);
+
+                if (priceToCart > 0 && quantityToCart > 0 && totalToCart > 0) {
+                    return true;
+                } else {
+                    return false;
+                }
+            } catch (NumberFormatException e) {
+                return false;
+            }
+        }
     }
 }

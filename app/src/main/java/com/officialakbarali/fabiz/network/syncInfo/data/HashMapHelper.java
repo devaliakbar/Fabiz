@@ -82,7 +82,11 @@ public class HashMapHelper {
                 new String[]{
                         FabizContract.Customer._ID, FabizContract.Customer.COLUMN_CR_NO, FabizContract.Customer.COLUMN_SHOP_NAME, FabizContract.Customer.COLUMN_BARCODE,
                         FabizContract.Customer.COLUMN_DAY, FabizContract.Customer.COLUMN_NAME, FabizContract.Customer.COLUMN_PHONE, FabizContract.Customer.COLUMN_EMAIL,
-                        FabizContract.Customer.COLUMN_ADDRESS, FabizContract.Customer.COLUMN_VAT_NO, FabizContract.Customer.COLUMN_TELEPHONE
+                        FabizContract.Customer.COLUMN_ADDRESS_AREA,
+                        FabizContract.Customer.COLUMN_ADDRESS_ROAD,
+                        FabizContract.Customer.COLUMN_ADDRESS_BLOCK,
+                        FabizContract.Customer.COLUMN_ADDRESS_SHOP_NUM,
+                        FabizContract.Customer.COLUMN_VAT_NO, FabizContract.Customer.COLUMN_TELEPHONE
                 },
                 FabizContract.Customer._ID + "=?",
                 new String[]{
@@ -104,7 +108,12 @@ public class HashMapHelper {
             hashMap.put(FabizContract.Customer.COLUMN_NAME, custCursor.getString(custCursor.getColumnIndexOrThrow(FabizContract.Customer.COLUMN_NAME)));
             hashMap.put(FabizContract.Customer.COLUMN_PHONE, custCursor.getString(custCursor.getColumnIndexOrThrow(FabizContract.Customer.COLUMN_PHONE)));
             hashMap.put(FabizContract.Customer.COLUMN_EMAIL, custCursor.getString(custCursor.getColumnIndexOrThrow(FabizContract.Customer.COLUMN_EMAIL)));
-            hashMap.put(FabizContract.Customer.COLUMN_ADDRESS, custCursor.getString(custCursor.getColumnIndexOrThrow(FabizContract.Customer.COLUMN_ADDRESS)));
+
+            hashMap.put(FabizContract.Customer.COLUMN_ADDRESS_AREA, custCursor.getString(custCursor.getColumnIndexOrThrow(FabizContract.Customer.COLUMN_ADDRESS_AREA)));
+            hashMap.put(FabizContract.Customer.COLUMN_ADDRESS_ROAD, custCursor.getString(custCursor.getColumnIndexOrThrow(FabizContract.Customer.COLUMN_ADDRESS_ROAD)));
+            hashMap.put(FabizContract.Customer.COLUMN_ADDRESS_BLOCK, custCursor.getString(custCursor.getColumnIndexOrThrow(FabizContract.Customer.COLUMN_ADDRESS_BLOCK)));
+            hashMap.put(FabizContract.Customer.COLUMN_ADDRESS_SHOP_NUM, custCursor.getString(custCursor.getColumnIndexOrThrow(FabizContract.Customer.COLUMN_ADDRESS_SHOP_NUM)));
+
             hashMap.put(FabizContract.Customer.COLUMN_VAT_NO, custCursor.getString(custCursor.getColumnIndexOrThrow(FabizContract.Customer.COLUMN_VAT_NO)));
             hashMap.put(FabizContract.Customer.COLUMN_TELEPHONE, custCursor.getString(custCursor.getColumnIndexOrThrow(FabizContract.Customer.COLUMN_TELEPHONE)));
         }

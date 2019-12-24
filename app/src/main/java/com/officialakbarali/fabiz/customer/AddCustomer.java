@@ -38,7 +38,7 @@ import static com.officialakbarali.fabiz.network.syncInfo.SetupSync.OP_INSERT;
 
 
 public class AddCustomer extends AppCompatActivity {
-    TextInputEditText nameE, phoneE, emailE, addresssE, crE, shopNameE, telephoneE, vatNoE;
+    TextInputEditText nameE, phoneE, emailE, addresssAreaE, addresssBlockE, addresssRoadE, addresssShopNumE, crE, shopNameE, telephoneE, vatNoE;
     private Toast toast;
     FabizProvider fabizProvider;
     Button saveCustomerB;
@@ -51,7 +51,13 @@ public class AddCustomer extends AppCompatActivity {
         nameE = findViewById(R.id.cust_add_name);
         phoneE = findViewById(R.id.cust_add_phone);
         emailE = findViewById(R.id.cust_add_email);
-        addresssE = findViewById(R.id.cust_add_address);
+
+        addresssAreaE = findViewById(R.id.cust_add_addressArea);
+        addresssBlockE = findViewById(R.id.cust_add_addressBlock);
+        addresssRoadE = findViewById(R.id.cust_add_addressRoad);
+        addresssShopNumE = findViewById(R.id.cust_add_addressShopNum);
+
+
         crE = findViewById(R.id.cust_add_cr);
         shopNameE = findViewById(R.id.cust_add_shop_name);
 
@@ -67,7 +73,13 @@ public class AddCustomer extends AppCompatActivity {
                 String name = nameE.getText().toString().toUpperCase().trim();
                 String phone = phoneE.getText().toString().trim();
                 String email = emailE.getText().toString().trim();
-                String address = addresssE.getText().toString().toUpperCase().trim();
+
+                String addressArea = addresssAreaE.getText().toString().toUpperCase().trim();
+                String addressRoad = addresssBlockE.getText().toString().toUpperCase().trim();
+                String addressBlock = addresssRoadE.getText().toString().toUpperCase().trim();
+                String addressShopNum = addresssShopNumE.getText().toString().toUpperCase().trim();
+
+
                 String crNumber = crE.getText().toString().toUpperCase().trim();
                 String shopName = shopNameE.getText().toString().toUpperCase().trim();
 
@@ -121,11 +133,30 @@ public class AddCustomer extends AppCompatActivity {
                     values.put(FabizContract.Customer.COLUMN_EMAIL, email);
                 }
 
-                if (address.matches("")) {
-                    values.put(FabizContract.Customer.COLUMN_ADDRESS, "NA");
+                if (addressArea.matches("")) {
+                    values.put(FabizContract.Customer.COLUMN_ADDRESS_AREA, "NA");
                 } else {
-                    values.put(FabizContract.Customer.COLUMN_ADDRESS, address);
+                    values.put(FabizContract.Customer.COLUMN_ADDRESS_AREA, addressArea);
                 }
+
+                if (addressRoad.matches("")) {
+                    values.put(FabizContract.Customer.COLUMN_ADDRESS_ROAD, "NA");
+                } else {
+                    values.put(FabizContract.Customer.COLUMN_ADDRESS_ROAD, addressRoad);
+                }
+
+                if (addressBlock.matches("")) {
+                    values.put(FabizContract.Customer.COLUMN_ADDRESS_BLOCK, "NA");
+                } else {
+                    values.put(FabizContract.Customer.COLUMN_ADDRESS_BLOCK, addressBlock);
+                }
+
+                if (addressShopNum.matches("")) {
+                    values.put(FabizContract.Customer.COLUMN_ADDRESS_SHOP_NUM, "NA");
+                } else {
+                    values.put(FabizContract.Customer.COLUMN_ADDRESS_SHOP_NUM, addressShopNum);
+                }
+
 
                 if (telephone.matches("")) {
                     values.put(FabizContract.Customer.COLUMN_TELEPHONE, "NA");
@@ -137,6 +168,12 @@ public class AddCustomer extends AppCompatActivity {
                     values.put(FabizContract.Customer.COLUMN_VAT_NO, "NA");
                 } else {
                     values.put(FabizContract.Customer.COLUMN_VAT_NO, vatNo);
+                }
+
+                if (name.matches("")) {
+                    values.put(FabizContract.Customer.COLUMN_NAME, "NA");
+                } else {
+                    values.put(FabizContract.Customer.COLUMN_NAME, name);
                 }
 
 
@@ -173,7 +210,7 @@ public class AddCustomer extends AppCompatActivity {
     }
 
     private boolean validateEmail(String email) {
-        if (email.matches("NA")) return false;
+        if (email.matches("NA")) return true;
         return email.matches("^[\\w-_\\.+]*[\\w-_\\.]\\@([\\w]+\\.)+[\\w]+[\\w]$");
     }
 
@@ -192,27 +229,40 @@ public class AddCustomer extends AppCompatActivity {
         return !matcher.find();
     }
 
-    private boolean validateAddressInformation(String passedString) {
-        if (passedString.matches("NA")) return false;
-        Pattern pattern = Pattern.compile("[^A-Za-z0-9 ._,-]");
+    private boolean validateCommonInformationExceptNa(String passedString) {
+        if (passedString.matches("NA")) return true;
+        Pattern pattern = Pattern.compile("[^A-Za-z0-9 ._-]");
         Matcher matcher = pattern.matcher(passedString);
         return !matcher.find();
     }
 
 
+    private boolean validateAddresses(ContentValues values) {
+        if (validateCommonInformation(values.getAsString(FabizContract.Customer.COLUMN_ADDRESS_AREA))) {
+            if (validateCommonInformationExceptNa(values.getAsString(FabizContract.Customer.COLUMN_ADDRESS_BLOCK))) {
+                if (validateCommonInformationExceptNa(values.getAsString(FabizContract.Customer.COLUMN_ADDRESS_ROAD))) {
+                    if (validateCommonInformationExceptNa(values.getAsString(FabizContract.Customer.COLUMN_ADDRESS_SHOP_NUM))) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
     private boolean validateCustomerFields(ContentValues values) {
         if (validateName(values.getAsString(FabizContract.Customer.COLUMN_NAME))) {
             if (validatePhoneNumber(values.getAsString(FabizContract.Customer.COLUMN_PHONE))) {
                 if (validateEmail(values.getAsString(FabizContract.Customer.COLUMN_EMAIL))) {
-                    if (validateAddressInformation(values.getAsString(FabizContract.Customer.COLUMN_ADDRESS))) {
+                    if (validateAddresses(values)) {
                         if (validateCommonInformation(values.getAsString(FabizContract.Customer.COLUMN_SHOP_NAME))) {
-                            if (validateCommonInformation(values.getAsString(FabizContract.Customer.COLUMN_CR_NO))) {
+                            if (validateCommonInformationExceptNa(values.getAsString(FabizContract.Customer.COLUMN_CR_NO))) {
                                 if (validateVatNumber(values.getAsString(FabizContract.Customer.COLUMN_VAT_NO))) {
-                                    if (validatePhoneNumber(values.getAsString(FabizContract.Customer.COLUMN_TELEPHONE))) {
-                                        return true;
-                                    } else {
-                                        showToast("Please enter valid Telephone");
-                                    }
+//                                    if (validatePhoneNumber(values.getAsString(FabizContract.Customer.COLUMN_TELEPHONE))) {
+                                    return true;
+//                                    } else {
+//                                        showToast("Please enter valid Telephone");
+//                                    }
                                 } else {
                                     showToast("Please enter valid Vat Number");
                                 }
@@ -297,7 +347,13 @@ public class AddCustomer extends AppCompatActivity {
         TextInputLayout nameC = findViewById(R.id.namec);
         TextInputLayout phoneC = findViewById(R.id.phonec);
         TextInputLayout emailC = findViewById(R.id.emailc);
-        TextInputLayout addresssC = findViewById(R.id.addc);
+
+        TextView addressLabel = findViewById(R.id.address_label_id);
+        TextInputLayout addresssAreaC = findViewById(R.id.addAreac);
+        TextInputLayout addresssRoadC = findViewById(R.id.addRoadc);
+        TextInputLayout addresssBlockC = findViewById(R.id.addBlockc);
+        TextInputLayout addressShopNumC = findViewById(R.id.addShopNumc);
+
         TextInputLayout vatNoC = findViewById(R.id.vatc);
         TextInputLayout crC = findViewById(R.id.crc);
         TextInputLayout shopNameC = findViewById(R.id.shopc);
@@ -308,7 +364,13 @@ public class AddCustomer extends AppCompatActivity {
         emailC.setVisibility(View.INVISIBLE);
         vatNoC.setVisibility(View.INVISIBLE);
         crC.setVisibility(View.INVISIBLE);
-        addresssC.setVisibility(View.INVISIBLE);
+
+        addresssAreaC.setVisibility(View.INVISIBLE);
+        addressLabel.setVisibility(View.INVISIBLE);
+        addresssRoadC.setVisibility(View.INVISIBLE);
+        addresssBlockC.setVisibility(View.INVISIBLE);
+        addressShopNumC.setVisibility(View.INVISIBLE);
+
         shopNameC.setVisibility(View.INVISIBLE);
         telephoneC.setVisibility(View.INVISIBLE);
     }
@@ -324,7 +386,15 @@ public class AddCustomer extends AppCompatActivity {
         final TextInputLayout nameC = findViewById(R.id.namec);
         final TextInputLayout phoneC = findViewById(R.id.phonec);
         final TextInputLayout emailC = findViewById(R.id.emailc);
-        final TextInputLayout addresssC = findViewById(R.id.addc);
+
+
+        final TextView addressLabel = findViewById(R.id.address_label_id);
+        final TextInputLayout addresssAreaC = findViewById(R.id.addAreac);
+        final TextInputLayout addresssRoadC = findViewById(R.id.addRoadc);
+        final TextInputLayout addresssBlockC = findViewById(R.id.addBlockc);
+        final TextInputLayout addressShopNumC = findViewById(R.id.addShopNumc);
+
+
         final TextInputLayout vatNoC = findViewById(R.id.vatc);
         final TextInputLayout crC = findViewById(R.id.crc);
         final TextInputLayout shopNameC = findViewById(R.id.shopc);
@@ -376,7 +446,17 @@ public class AddCustomer extends AppCompatActivity {
                         nameC.setVisibility(View.VISIBLE);
                         YoYo.with(Techniques.SlideInRight).duration(450).repeat(0).playOn(nameC);
 
-                        addresssC.setVisibility(View.VISIBLE);
+
+                        addresssAreaC.setVisibility(View.VISIBLE);
+                        addressLabel.setVisibility(View.VISIBLE);
+                        addresssRoadC.setVisibility(View.VISIBLE);
+                        addresssBlockC.setVisibility(View.VISIBLE);
+                        addressShopNumC.setVisibility(View.VISIBLE);
+
+                        YoYo.with(Techniques.SlideInLeft).duration(450).repeat(0).playOn(addresssAreaC);
+                        YoYo.with(Techniques.SlideInLeft).duration(450).repeat(0).playOn(addressLabel);
+                        YoYo.with(Techniques.SlideInLeft).duration(450).repeat(0).playOn(addresssRoadC);
+                        YoYo.with(Techniques.SlideInLeft).duration(450).repeat(0).playOn(addresssBlockC);
                         YoYo.with(Techniques.SlideInLeft).withListener(new Animator.AnimatorListener() {
                             @Override
                             public void onAnimationStart(Animator animation) {
@@ -401,7 +481,7 @@ public class AddCustomer extends AppCompatActivity {
                             public void onAnimationRepeat(Animator animation) {
 
                             }
-                        }).duration(450).repeat(0).playOn(addresssC);
+                        }).duration(450).repeat(0).playOn(addressShopNumC);
                     }
 
                     @Override

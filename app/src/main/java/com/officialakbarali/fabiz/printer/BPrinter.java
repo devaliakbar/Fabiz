@@ -31,7 +31,57 @@ public class BPrinter {
         StaffName = sharedPreferences.getString("nameOfStaff", "User");
     }
 
-    public void printInvoice(String billId,String date, List<Cart> cartItems, String totalAmount, String paidAmount,String totalDue, String customerName, String customerAddress, String vat) {
+
+    public void printPaymentReciept(List<String[]> paidSalesList, String totalAmount, String totalDue, String date, String customerName, String customerAddress, String vat) {
+        try {
+            outputStream = btsocket.getOutputStream();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        try {
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            outputStream = btsocket.getOutputStream();
+            byte[] printformat = new byte[]{0x1B, 0x21, 0x03};
+            outputStream.write(printformat);
+
+            printCustom("My Good Shop", 3, 1);
+            printCustom("VAT NO : 12345678", 1, 1);
+            printCustom("8 MILE NY USA", 0, 1);
+            printNewLine();
+            printCustom("Payment", 2, 1);
+            printNewLine();
+            printCustom("Date   :" + date, 0, 0);
+            printCustom("Staff  :" + StaffName, 0, 0);
+            printCustom("................................", 0, 0);
+            printCustom("................................", 0, 0);
+
+            for (int i = 0; i < paidSalesList.size(); i++) {
+                printCustom(paidSalesList.get(i)[0], 0, 1);
+                printCustom(TruncateDecimal(paidSalesList.get(i)[1]) + " " + getCurrency(), 0, 1);
+                printCustom("................................", 0, 0);
+            }
+            printCustom("................................", 0, 0);
+            printCustom("Total Amount Paid :" + TruncateDecimal(totalAmount) + " " + getCurrency(), 1, 2);
+            printCustom("Total Due Amount :" + TruncateDecimal(totalDue) + " " + getCurrency(), 1, 2);
+            printCustom("................................", 0, 0);
+            printNewLine();
+            printCustom(customerName, 2, 1);
+            printCustom("Vat :" + vat, 1, 1);
+            printCustom(customerAddress + vat, 0, 1);
+            printNewLine();
+            printCustom(">>>  Thank you  <<<", 1, 1);
+
+            outputStream.flush();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void printInvoice(String billId, String date, List<Cart> cartItems, String totalAmount, String paidAmount, String totalDue, String customerName, String customerAddress, String vat) {
         try {
             outputStream = btsocket.getOutputStream();
         } catch (IOException e) {

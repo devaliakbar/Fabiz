@@ -80,7 +80,13 @@ public class FabizContract {
         public static final String COLUMN_NAME = TABLE_NAME + "_" + "name";
         public static final String COLUMN_PHONE = TABLE_NAME + "_" + "phone";
         public static final String COLUMN_EMAIL = TABLE_NAME + "_" + "email";
-        public static final String COLUMN_ADDRESS = TABLE_NAME + "_" + "address";
+
+
+        public static final String COLUMN_ADDRESS_AREA = TABLE_NAME + "_" + "address"+ "_area";
+        public static final String COLUMN_ADDRESS_ROAD = TABLE_NAME + "_" + "address"+ "_road";
+        public static final String COLUMN_ADDRESS_BLOCK = TABLE_NAME + "_" + "address"+ "_block";
+        public static final String COLUMN_ADDRESS_SHOP_NUM = TABLE_NAME + "_" + "address"+ "_shop_num";
+
 
         public static final String COLUMN_TELEPHONE = TABLE_NAME + "_" + "telephone";
         public static final String COLUMN_VAT_NO = TABLE_NAME + "_" + "vat_no";
@@ -95,7 +101,13 @@ public class FabizContract {
         public static final String FULL_COLUMN_NAME = TABLE_NAME + "." + COLUMN_NAME;
         public static final String FULL_COLUMN_PHONE = TABLE_NAME + "." + COLUMN_PHONE;
         public static final String FULL_COLUMN_EMAIL = TABLE_NAME + "." + COLUMN_EMAIL;
-        public static final String FULL_COLUMN_ADDRESS = TABLE_NAME + "." + COLUMN_ADDRESS;
+
+        public static final String FULL_COLUMN_ADDRESS_AREA  = TABLE_NAME + "." + COLUMN_ADDRESS_AREA;
+        public static final String FULL_COLUMN_ADDRESS_ROAD = TABLE_NAME + "." + COLUMN_ADDRESS_ROAD;
+        public static final String FULL_COLUMN_ADDRESS_BLOCK = TABLE_NAME + "." + COLUMN_ADDRESS_BLOCK;
+        public static final String FULL_COLUMN_ADDRESS_SHOP_NUM = TABLE_NAME + "." + COLUMN_ADDRESS_SHOP_NUM;
+
+
         public static final String FULL_COLUMN_TELEPHONE = TABLE_NAME + "_" + COLUMN_TELEPHONE;
         public static final String FULL_COLUMN_VAT_NO = TABLE_NAME + "_" + COLUMN_VAT_NO;
     }

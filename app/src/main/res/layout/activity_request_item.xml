@@ -9,6 +9,34 @@
         tools:context=".requestStock.RequestItem">
 
 
+    <LinearLayout
+            android:visibility="gone"
+            android:id="@+id/enter_cont"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="11dp"
+            android:gravity="center"
+            android:orientation="vertical">
+
+        <ImageButton
+                android:id="@+id/request_stock_enter_item"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/button_color_main_home_icon"
+                android:padding="4dp"
+                android:src="@drawable/ic_pick_item_main" />
+
+        <TextView
+                style="@style/text_size_small"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:text="Enter item"
+                android:textColor="@color/text_color" />
+
+    </LinearLayout>
+
+
     <EditText
             android:id="@+id/item_search"
             style="@style/text_size_med"

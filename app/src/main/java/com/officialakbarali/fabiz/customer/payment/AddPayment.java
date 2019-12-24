@@ -8,11 +8,14 @@ import android.animation.Animator;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.app.TimePickerDialog;
+import android.bluetooth.BluetoothSocket;
 import android.content.ContentValues;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.icu.util.CurrencyAmount;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -37,13 +40,17 @@ import com.daimajia.androidanimations.library.YoYo;
 import com.officialakbarali.fabiz.CommonResumeCheck;
 import com.officialakbarali.fabiz.R;
 import com.officialakbarali.fabiz.bottomSheets.SalesReviewFilterBottomSheet;
+import com.officialakbarali.fabiz.customer.sale.Sales;
 import com.officialakbarali.fabiz.customer.sale.adapter.SalesReviewAdapter;
 import com.officialakbarali.fabiz.customer.sale.data.SalesReviewDetail;
 import com.officialakbarali.fabiz.data.db.FabizContract;
 import com.officialakbarali.fabiz.data.db.FabizProvider;
 import com.officialakbarali.fabiz.network.syncInfo.SetupSync;
 import com.officialakbarali.fabiz.network.syncInfo.data.SyncLogDetail;
+import com.officialakbarali.fabiz.printer.BPrinter;
+import com.officialakbarali.fabiz.printer.DeviceList;
 
+import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -58,6 +65,7 @@ import static com.officialakbarali.fabiz.data.CommonInformation.convertDateToDis
 import static com.officialakbarali.fabiz.data.CommonInformation.convertDateToSearchFormat;
 import static com.officialakbarali.fabiz.data.CommonInformation.getCurrency;
 import static com.officialakbarali.fabiz.network.syncInfo.SetupSync.OP_CODE_PAY;
+import static com.officialakbarali.fabiz.network.syncInfo.SetupSync.OP_CODE_PAY_PAID_STACK;
 import static com.officialakbarali.fabiz.network.syncInfo.SetupSync.OP_INSERT;
 import static com.officialakbarali.fabiz.network.syncInfo.SetupSync.OP_UPDATE;
 
@@ -365,7 +373,7 @@ public class AddPayment extends AppCompatActivity implements SalesReviewAdapter.
 
                 setPaymentToSql(enteredAmount);
 
-            } catch (Error e) {
+            } catch (NumberFormatException e) {
                 showToast("Enter a valid number");
             }
         }
@@ -431,7 +439,9 @@ public class AddPayment extends AppCompatActivity implements SalesReviewAdapter.
                 syncLogList.add(new SyncLogDetail(idToInsertPayment + "", FabizContract.Payment.TABLE_NAME, OP_INSERT));
                 new SetupSync(this, syncLogList, provider, "Amount saved successful", OP_CODE_PAY);
                 paymentDialog.dismiss();
-                showDialogueInfo(enteredAmount, dueAmountToUpdate);
+                List<String[]> paidSalesList = new ArrayList<>();
+                paidSalesList.add(new String[]{mSalesReviewDetail.getId(), enteredAmount + ""});
+                showDialogueInfo(currentTime, paidSalesList, enteredAmount, dueAmountToUpdate);
             } else {
                 provider.finishTransaction();
                 showToast("Failed to save");
@@ -442,7 +452,33 @@ public class AddPayment extends AppCompatActivity implements SalesReviewAdapter.
         }
     }
 
-    private void showDialogueInfo(double entAmt, double dueAmt) {
+    private BluetoothSocket btsocket;
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        try {
+            btsocket = DeviceList.getSocket();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        try {
+            if (btsocket != null) {
+                btsocket.close();
+                btsocket = null;
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+    }
+
+    private void showDialogueInfo(final String cDate, final List<String[]> paidSalesList, final double entAmt, final double dueAmt) {
         final Dialog dialog = new Dialog(this);
         dialog.setContentView(R.layout.pop_up_for_sale_and_payment_success);
 
@@ -455,12 +491,12 @@ public class AddPayment extends AppCompatActivity implements SalesReviewAdapter.
         dialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
             @Override
             public void onDismiss(DialogInterface dialog) {
-                setPaymentsDetail();
-                showBills(null, null);
+                finish();
             }
         });
 
         Button okayButton = dialog.findViewById(R.id.pop_up_for_payment_okay);
+        okayButton.setText("Okay");
         okayButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -468,8 +504,54 @@ public class AddPayment extends AppCompatActivity implements SalesReviewAdapter.
             }
         });
 
+        Button printButton = dialog.findViewById(R.id.pop_up_for_payment_add_pay);
+        printButton.setText("Print");
+        printButton.setVisibility(View.VISIBLE);
+        printButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (btsocket == null) {
+                    Intent BTIntent = new Intent(getApplicationContext(), DeviceList.class);
+                    startActivityForResult(BTIntent, DeviceList.REQUEST_CONNECT_BT);
+                } else {
+                    BPrinter printer = new BPrinter(btsocket, AddPayment.this);
+                    provider = new FabizProvider(AddPayment.this, false);
+
+                    Cursor cursor = provider.query(FabizContract.Customer.TABLE_NAME, new String[]{FabizContract.Customer.COLUMN_SHOP_NAME,
+                                    FabizContract.Customer.COLUMN_VAT_NO,
+                                    FabizContract.Customer.COLUMN_ADDRESS_AREA,
+                                    FabizContract.Customer.COLUMN_ADDRESS_ROAD,
+                                    FabizContract.Customer.COLUMN_ADDRESS_BLOCK,
+                                    FabizContract.Customer.COLUMN_ADDRESS_SHOP_NUM
+                            },
+                            FabizContract.Customer._ID + "=?", new String[]{custId}, null);
+                    if (cursor.moveToNext()) {
+                        String addressForInvoice = cursor.getString(cursor.getColumnIndex(FabizContract.Customer.COLUMN_ADDRESS_AREA));
+                        if (!cursor.getString(cursor.getColumnIndex(FabizContract.Customer.COLUMN_ADDRESS_ROAD)).matches("NA")) {
+                            addressForInvoice += ", " + cursor.getString(cursor.getColumnIndex(FabizContract.Customer.COLUMN_ADDRESS_ROAD));
+                        }
+                        if (!cursor.getString(cursor.getColumnIndex(FabizContract.Customer.COLUMN_ADDRESS_BLOCK)).matches("NA")) {
+                            addressForInvoice += ", " + cursor.getString(cursor.getColumnIndex(FabizContract.Customer.COLUMN_ADDRESS_BLOCK));
+                        }
+                        if (!cursor.getString(cursor.getColumnIndex(FabizContract.Customer.COLUMN_ADDRESS_SHOP_NUM)).matches("NA")) {
+                            addressForInvoice += ", " + cursor.getString(cursor.getColumnIndex(FabizContract.Customer.COLUMN_ADDRESS_SHOP_NUM));
+                        }
+
+                        printer.printPaymentReciept(paidSalesList, entAmt + "", dueA - entAmt + "", cDate,
+                                cursor.getString(cursor.getColumnIndex(FabizContract.Customer.COLUMN_SHOP_NAME)), addressForInvoice,
+                                cursor.getString(cursor.getColumnIndex(FabizContract.Customer.COLUMN_VAT_NO)));
+
+                    } else {
+                        showToast("Something went wrong, can't print right now");
+                    }
+                    dialog.dismiss();
+                }
+            }
+        });
+
         final TextView dateV = dialog.findViewById(R.id.pop_up_for_payment_date);
         final TextView enteredAmntV = dialog.findViewById(R.id.pop_up_for_payment_ent_amt);
+
         final TextView dueAmtV = dialog.findViewById(R.id.pop_up_for_payment_due);
 
         TextView dueLabelText = dialog.findViewById(R.id.pop_up_for_payment_due_label);
@@ -480,6 +562,11 @@ public class AddPayment extends AppCompatActivity implements SalesReviewAdapter.
         enteredAmntV.setText(": " + TruncateDecimal(entAmt + ""));
 
         dueAmtV.setText(": " + TruncateDecimal(dueAmt + ""));
+
+        LinearLayout dueConatiner = dialog.findViewById(R.id.due_payment_id);
+        dueConatiner.setVisibility(View.GONE);
+
+
         dialog.show();
     }
 
@@ -742,13 +829,14 @@ public class AddPayment extends AppCompatActivity implements SalesReviewAdapter.
     }
 
     private void setUpBalanceAmntToAnotherBill(double amountToBeAdd) {
+        double recievedAmnt = amountToBeAdd;
         List<SyncLogDetail> syncLogList = new ArrayList<>();
         provider.createTransaction();
 
         Cursor balBill = provider.query(FabizContract.BillDetail.TABLE_NAME, new String[]
                         {FabizContract.BillDetail._ID, FabizContract.BillDetail.COLUMN_PAID, FabizContract.BillDetail.COLUMN_DUE},
                 FabizContract.BillDetail.COLUMN_DUE + " > ? AND " + FabizContract.BillDetail.FULL_COLUMN_CUST_ID + "=?", new String[]{"0", custId}, FabizContract.BillDetail._ID + " ASC");
-
+        List<String[]> paidSalesList = new ArrayList<>();
         while (balBill.moveToNext()) {
             double cBillPaidAmnt;
             double cBillDueAmt = balBill.getDouble(balBill.getColumnIndexOrThrow(FabizContract.BillDetail.COLUMN_DUE));
@@ -769,6 +857,8 @@ public class AddPayment extends AppCompatActivity implements SalesReviewAdapter.
                 provider.finishTransaction();
                 return;
             }
+
+            paidSalesList.add(new String[]{cbillId, cBillPaidAmnt + ""});
 
             ContentValues logTranscValues = new ContentValues();
             logTranscValues.put(FabizContract.Payment._ID, idToInsertPayment);
@@ -807,7 +897,8 @@ public class AddPayment extends AppCompatActivity implements SalesReviewAdapter.
                 break;
             }
         }
-        new SetupSync(this, syncLogList, provider, "Amount saved successful", OP_CODE_PAY);
-        finish();
+        new SetupSync(this, syncLogList, provider, "Amount saved successful", OP_CODE_PAY_PAID_STACK);
+        paymentDialog.dismiss();
+        showDialogueInfo(currentTime, paidSalesList, recievedAmnt, dueA);
     }
 }

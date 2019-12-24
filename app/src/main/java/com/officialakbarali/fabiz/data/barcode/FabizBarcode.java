@@ -207,7 +207,7 @@ public class FabizBarcode extends AppCompatActivity implements ZXingScannerView.
     }
 
     private void enterQtyDialogue(final ItemDetail itemDetail) {
-        fillUnitData();
+        fillUnitData(itemDetail.getUnitId());
 
         final Dialog dialog = new Dialog(this);
         dialog.setContentView(R.layout.pop_up_customer_sale_item_qty);
@@ -339,15 +339,22 @@ public class FabizBarcode extends AppCompatActivity implements ZXingScannerView.
         dialog.show();
     }
 
-    private void fillUnitData() {
+    private void fillUnitData(String unitIdForPushOnTop) {
         FabizProvider provider = new FabizProvider(this, false);
         Cursor cursor = provider.query(FabizContract.ItemUnit.TABLE_NAME, new String[]{FabizContract.ItemUnit.FULL_COLUMN_ID, FabizContract.ItemUnit.COLUMN_UNIT_NAME,
                 FabizContract.ItemUnit.COLUMN_QTY}, null, null, null);
         unitData = new ArrayList<>();
         while (cursor.moveToNext()) {
-            unitData.add(new UnitData(cursor.getString(cursor.getColumnIndexOrThrow(FabizContract.ItemUnit._ID)),
-                    cursor.getString(cursor.getColumnIndexOrThrow(FabizContract.ItemUnit.COLUMN_UNIT_NAME)),
-                    cursor.getInt(cursor.getColumnIndexOrThrow(FabizContract.ItemUnit.COLUMN_QTY))));
+            if (cursor.getString(cursor.getColumnIndexOrThrow(FabizContract.ItemUnit._ID)).matches(unitIdForPushOnTop)) {
+                unitData.add(0, new UnitData(cursor.getString(cursor.getColumnIndexOrThrow(FabizContract.ItemUnit._ID)),
+                        cursor.getString(cursor.getColumnIndexOrThrow(FabizContract.ItemUnit.COLUMN_UNIT_NAME)),
+                        cursor.getInt(cursor.getColumnIndexOrThrow(FabizContract.ItemUnit.COLUMN_QTY))));
+            } else {
+                unitData.add(new UnitData(cursor.getString(cursor.getColumnIndexOrThrow(FabizContract.ItemUnit._ID)),
+                        cursor.getString(cursor.getColumnIndexOrThrow(FabizContract.ItemUnit.COLUMN_UNIT_NAME)),
+                        cursor.getInt(cursor.getColumnIndexOrThrow(FabizContract.ItemUnit.COLUMN_QTY))));
+            }
+
         }
         myUnitData = unitData.get(0);
     }
@@ -367,7 +374,7 @@ public class FabizBarcode extends AppCompatActivity implements ZXingScannerView.
                 } else {
                     return false;
                 }
-            } catch (Error e) {
+            } catch (NumberFormatException e) {
                 return false;
             }
         }

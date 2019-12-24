@@ -29,7 +29,7 @@ public class SalesAdapter extends RecyclerView.Adapter<SalesAdapter.SalesViewHol
     private boolean SET_SALES_RETURN_VISIBILITY;
 
     public interface SalesAdapterOnClickListener {
-        void onClick(int indexToBeRemoved, Cart cartITemList);
+        void onClick(boolean modificationFlag, int indexToBeRemoved, Cart cartITemList);
     }
 
     public SalesAdapter(Context context, SalesAdapterOnClickListener salesAdapterOnClickListener, boolean setVisibilityOfReview, boolean setVisibilityOfReturn) {
@@ -120,7 +120,7 @@ public class SalesAdapter extends RecyclerView.Adapter<SalesAdapter.SalesViewHol
         return temp;
     }
 
-    class SalesViewHolder extends RecyclerView.ViewHolder {
+    class SalesViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         TextView itemDetail, itemPrice, itemQty, itemTotal, itemReturn, itemUnit;
         ImageButton removeBtn;
         RelativeLayout mainParent;
@@ -134,7 +134,7 @@ public class SalesAdapter extends RecyclerView.Adapter<SalesAdapter.SalesViewHol
             removeBtn.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    mClickHandler.onClick(getAdapterPosition(), cartList.get(getAdapterPosition()));
+                    mClickHandler.onClick(false, getAdapterPosition(), cartList.get(getAdapterPosition()));
                 }
             });
 
@@ -145,6 +145,13 @@ public class SalesAdapter extends RecyclerView.Adapter<SalesAdapter.SalesViewHol
             itemQty = itemView.findViewById(R.id.cust_sale_view_qty);
             itemTotal = itemView.findViewById(R.id.cust_sale_view_total);
             itemReturn = itemView.findViewById(R.id.cust_sale_view_return);
+
+            itemView.setOnClickListener(this);
+        }
+
+        @Override
+        public void onClick(View view) {
+            mClickHandler.onClick(true, getAdapterPosition(), cartList.get(getAdapterPosition()));
         }
     }
 }
