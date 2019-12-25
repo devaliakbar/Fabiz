@@ -262,7 +262,7 @@ public class RequestStock extends AppCompatActivity implements RequestStockAdapt
     }
 
     private void hideAll() {
-        LinearLayout addCont, pickCont, printCont, clearCont;
+        LinearLayout addCont, pickCont, printCont, clearCont, sendCont;
 
         recyclerView.setVisibility(View.INVISIBLE);
 
@@ -270,7 +270,10 @@ public class RequestStock extends AppCompatActivity implements RequestStockAdapt
         addCont = findViewById(R.id.enter_cont);
         pickCont = findViewById(R.id.pick_cont);
         printCont = findViewById(R.id.print_cont);
+        sendCont = findViewById(R.id.send_cont);
 
+
+        sendCont.setVisibility(View.INVISIBLE);
         clearCont.setVisibility(View.INVISIBLE);
         addCont.setVisibility(View.INVISIBLE);
         printCont.setVisibility(View.INVISIBLE);
@@ -280,11 +283,13 @@ public class RequestStock extends AppCompatActivity implements RequestStockAdapt
 
     private void setUpAnimation() {
         hideAll();
-        final LinearLayout addCont, pickCont, printCont, clearCont;
+        final LinearLayout addCont, pickCont, printCont, clearCont, sendCont;
         addCont = findViewById(R.id.enter_cont);
         pickCont = findViewById(R.id.pick_cont);
         printCont = findViewById(R.id.print_cont);
         clearCont = findViewById(R.id.clear_cont);
+
+        sendCont = findViewById(R.id.send_cont);
 
         YoYo.with(Techniques.SlideInLeft).withListener(new Animator.AnimatorListener() {
             @Override
@@ -300,6 +305,9 @@ public class RequestStock extends AppCompatActivity implements RequestStockAdapt
                 YoYo.with(Techniques.FadeInDown).duration(400).repeat(0).playOn(pickCont);
                 clearCont.setVisibility(View.VISIBLE);
                 YoYo.with(Techniques.FadeInDown).duration(400).repeat(0).playOn(clearCont);
+                sendCont.setVisibility(View.VISIBLE);
+                YoYo.with(Techniques.FadeInRight).duration(400).repeat(0).playOn(sendCont);
+
                 printCont.setVisibility(View.VISIBLE);
                 YoYo.with(Techniques.FadeInRight).withListener(new Animator.AnimatorListener() {
                     @Override
