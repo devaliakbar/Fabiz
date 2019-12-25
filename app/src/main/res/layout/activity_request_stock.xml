@@ -8,19 +8,20 @@
         tools:context=".requestStock.RequestStock">
 
 
-    <LinearLayout
+    <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="10dp"
-            android:orientation="horizontal"
             android:paddingStart="33dp"
             android:paddingTop="18dp"
             android:paddingEnd="33dp">
+
 
         <LinearLayout
                 android:id="@+id/pick_cont"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_alignParentStart="true"
                 android:orientation="vertical">
 
             <ImageButton
@@ -46,9 +47,9 @@
 
         <LinearLayout
                 android:id="@+id/clear_cont"
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:gravity="end"
+                android:layout_centerHorizontal="true"
                 android:orientation="vertical">
 
             <ImageButton
@@ -69,6 +70,36 @@
                     android:textColor="@color/text_color" />
 
         </LinearLayout>
+
+
+        <LinearLayout
+                android:id="@+id/send_cont"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:orientation="vertical">
+
+            <ImageButton
+                    android:id="@+id/request_stock_send"
+                    android:layout_width="60dp"
+                    android:layout_height="60dp"
+                    android:background="@drawable/button_color_main_home_icon"
+                    android:padding="10dp"
+                    android:scaleType="fitCenter"
+                    android:src="@drawable/main_home_sync" />
+
+            <TextView
+                    style="@style/text_size_small"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:text="Send"
+                    android:textColor="@color/text_color" />
+
+        </LinearLayout>
+
 
         <LinearLayout
                 android:id="@+id/print_cont"
@@ -124,7 +155,7 @@
 
         </LinearLayout>
 
-    </LinearLayout>
+    </RelativeLayout>
 
 
     <LinearLayout

@@ -7,8 +7,8 @@ import com.android.volley.toolbox.StringRequest;
 import java.util.Map;
 
 public class VolleyRequest extends StringRequest {
-  // private static final String PRE_LOGIN_URL = "http://192.168.0.14/fabiz/";
-    private static final String PRE_LOGIN_URL = "http://efabiz.com/app/";
+   private static final String PRE_LOGIN_URL = "http://192.168.64.2/fabiz/";
+   // private static final String PRE_LOGIN_URL = "http://efabiz.com/app/";
     private Map<String, String> parameters;
 
     public VolleyRequest(String PASSED_URL, Map<String, String> passedParameters, Response.Listener<String> listener, Response.ErrorListener errorListener) {

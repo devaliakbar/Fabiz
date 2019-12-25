@@ -9,10 +9,13 @@ import android.app.Dialog;
 import android.bluetooth.BluetoothSocket;
 import android.content.ContentValues;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
@@ -22,20 +25,36 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
+import com.android.volley.NetworkError;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.ServerError;
+import com.android.volley.TimeoutError;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.Volley;
 import com.daimajia.androidanimations.library.Techniques;
 import com.daimajia.androidanimations.library.YoYo;
 import com.officialakbarali.fabiz.CommonResumeCheck;
+import com.officialakbarali.fabiz.LogIn;
 import com.officialakbarali.fabiz.R;
+import com.officialakbarali.fabiz.blockPages.AppVersion;
 import com.officialakbarali.fabiz.data.db.FabizContract;
 import com.officialakbarali.fabiz.data.db.FabizProvider;
+import com.officialakbarali.fabiz.network.VolleyRequest;
 import com.officialakbarali.fabiz.printer.BPrinter;
 import com.officialakbarali.fabiz.printer.DeviceList;
 import com.officialakbarali.fabiz.requestStock.adapter.RequestStockAdapter;
 import com.officialakbarali.fabiz.requestStock.data.RequestItem;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+
+import static com.officialakbarali.fabiz.data.MyAppVersion.GET_MY_APP_VERSION;
 
 public class RequestStock extends AppCompatActivity implements RequestStockAdapter.RequestStockOnClickListener {
     public static List<RequestItem> itemsForRequest;
@@ -50,6 +69,15 @@ public class RequestStock extends AppCompatActivity implements RequestStockAdapt
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_request_stock);
+
+
+        ImageButton sendToServer = findViewById(R.id.request_stock_send);
+        sendToServer.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                sendToServer();
+            }
+        });
 
         recyclerView = findViewById(R.id.request_stock_recycler);
         adapter = new RequestStockAdapter(this, this);
@@ -67,7 +95,7 @@ public class RequestStock extends AppCompatActivity implements RequestStockAdapt
                         Intent BTIntent = new Intent(getApplicationContext(), DeviceList.class);
                         RequestStock.this.startActivityForResult(BTIntent, DeviceList.REQUEST_CONNECT_BT);
                     } else {
-                        BPrinter printer = new BPrinter(btsocket,RequestStock.this);
+                        BPrinter printer = new BPrinter(btsocket, RequestStock.this);
                         printer.printRequestItems(itemsForRequest);
                     }
                 } else {
@@ -333,6 +361,72 @@ public class RequestStock extends AppCompatActivity implements RequestStockAdapt
             itemsForRequest.add(new RequestItem(requestCursor.getString(requestCursor.getColumnIndexOrThrow(FabizContract.RequestItem.COLUMN_NAME)),
                     requestCursor.getString(requestCursor.getColumnIndexOrThrow(FabizContract.RequestItem.COLUMN_QTY))));
         }
+    }
+
+    private void sendToServer() {
+        if (itemsForRequest.size() < 1) {
+            showToast("List is empty");
+            return;
+        }
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        String userName = sharedPreferences.getString("my_username", null);
+        String mySignature = sharedPreferences.getString("mysign", null);
+
+        HashMap<String, String> hashMap = new HashMap<>();
+        hashMap.put("app_version", "" + GET_MY_APP_VERSION());
+        hashMap.put("my_username", "" + userName);
+        hashMap.put("mysign", "" + mySignature);
+
+        hashMap.put("row_size", "" + itemsForRequest.size());
+        int i = 0;
+        while (i < itemsForRequest.size()) {
+            hashMap.put(FabizContract.RequestItem.COLUMN_NAME + i, itemsForRequest.get(i).getName());
+            hashMap.put(FabizContract.RequestItem.COLUMN_QTY + i, itemsForRequest.get(i).getQty());
+            i++;
+        }
+
+        RequestQueue requestQueue = Volley.newRequestQueue(this);
+
+        final VolleyRequest volleyRequest = new VolleyRequest("sendRequestItem.php", hashMap, new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+                Log.i("Response :", response);
+                try {
+                    JSONObject jsonObject = new JSONObject(response);
+                    if (jsonObject.getBoolean("success")) {
+                        FabizProvider provider = new FabizProvider(RequestStock.this, true);
+                        provider.delete(FabizContract.RequestItem.TABLE_NAME, null, null);
+                        itemsForRequest = new ArrayList<>();
+                        adapter.swapAdapter(itemsForRequest);
+                        if (itemsForRequest.size() > 0) {
+                            displayEmptyView(false);
+                        } else {
+                            displayEmptyView(true);
+                        }
+
+                        showToast("Successfully send to server");
+                    } else {
+                        showToast("Failed to send");
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                    showToast("Bad Response From Server");
+                }
+
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                if (error instanceof ServerError) {
+                    showToast("Server Error");
+                } else if (error instanceof TimeoutError) {
+                    showToast("Connection Timed Out");
+                } else if (error instanceof NetworkError) {
+                    showToast("Bad Network Connection");
+                }
+            }
+        });
+        requestQueue.add(volleyRequest);
     }
 }
 
