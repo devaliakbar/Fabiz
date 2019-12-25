@@ -144,6 +144,7 @@ public class Home extends AppCompatActivity {
             public void onClick(View v) {
                 Intent paymentReviewIntent = new Intent(Home.this, PaymentReview.class);
                 paymentReviewIntent.putExtra("id", custId + "");
+                paymentReviewIntent.putExtra("totDue",custDueAmt);
                 startActivity(paymentReviewIntent);
                 overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
             }

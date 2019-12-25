@@ -5,6 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AnimationUtils;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -23,9 +24,15 @@ import static com.officialakbarali.fabiz.data.CommonInformation.getCurrency;
 public class PaymentReviewAdapter extends RecyclerView.Adapter<PaymentReviewAdapter.PaymentReviewHolder> {
     private List<PaymentReviewDetail> paymentReviewDetailList;
     private Context context;
+    private PaymentReviewAdapterListener paymentReviewAdapterListener;
 
-    public PaymentReviewAdapter(Context context) {
+    public interface PaymentReviewAdapterListener {
+        void onClick(PaymentReviewDetail currentPaymentLog);
+    }
+
+    public PaymentReviewAdapter(Context context, PaymentReviewAdapterListener paymentReviewAdapterListener) {
         this.context = context;
+        this.paymentReviewAdapterListener = paymentReviewAdapterListener;
     }
 
     @NonNull
@@ -62,7 +69,7 @@ public class PaymentReviewAdapter extends RecyclerView.Adapter<PaymentReviewAdap
         if (amountS.length() > 17) {
             holder.amountV.setText(amountS.substring(0, 13));
         } else {
-            holder.amountV.setText(amountS+ " " + getCurrency());
+            holder.amountV.setText(amountS + " " + getCurrency());
         }
 
 
@@ -91,9 +98,18 @@ public class PaymentReviewAdapter extends RecyclerView.Adapter<PaymentReviewAdap
     class PaymentReviewHolder extends RecyclerView.ViewHolder {
         LinearLayout mainParent;
         TextView idV, dateV, amountV, billId;
+        ImageButton printBtn;
 
         PaymentReviewHolder(@NonNull View itemView) {
             super(itemView);
+
+            printBtn = itemView.findViewById(R.id.print_sales_review_receipt);
+            printBtn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    paymentReviewAdapterListener.onClick(paymentReviewDetailList.get(getAdapterPosition()));
+                }
+            });
 
             mainParent = itemView.findViewById(R.id.main_parent);
             idV = itemView.findViewById(R.id.payment_review_item_id);

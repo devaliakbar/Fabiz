@@ -6,6 +6,9 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.animation.Animator;
 import android.app.DatePickerDialog;
+import android.bluetooth.BluetoothSocket;
+import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.text.Editable;
@@ -24,7 +27,10 @@ import com.officialakbarali.fabiz.customer.payment.adapter.PaymentReviewAdapter;
 import com.officialakbarali.fabiz.customer.data.PaymentReviewDetail;
 import com.officialakbarali.fabiz.data.db.FabizContract;
 import com.officialakbarali.fabiz.data.db.FabizProvider;
+import com.officialakbarali.fabiz.printer.BPrinter;
+import com.officialakbarali.fabiz.printer.DeviceList;
 
+import java.io.IOException;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -32,7 +38,7 @@ import java.util.List;
 
 import static com.officialakbarali.fabiz.data.CommonInformation.convertDateToSearchFormat;
 
-public class PaymentReview extends AppCompatActivity {
+public class PaymentReview extends AppCompatActivity implements PaymentReviewAdapter.PaymentReviewAdapterListener {
     RecyclerView recyclerView;
     String custId;
     PaymentReviewAdapter adapter;
@@ -46,7 +52,7 @@ public class PaymentReview extends AppCompatActivity {
         custId = getIntent().getStringExtra("id");
 
         recyclerView = findViewById(R.id.payment_review_recycler);
-        adapter = new PaymentReviewAdapter(this);
+        adapter = new PaymentReviewAdapter(this, this);
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setHasFixedSize(true);
@@ -224,6 +230,70 @@ public class PaymentReview extends AppCompatActivity {
             emptyView.setVisibility(View.VISIBLE);
         } else {
             emptyView.setVisibility(View.GONE);
+        }
+    }
+
+    private BluetoothSocket btsocket;
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        try {
+            btsocket = DeviceList.getSocket();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        try {
+            if (btsocket != null) {
+                btsocket.close();
+                btsocket = null;
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void onClick(PaymentReviewDetail currentPaymentLog) {
+        List<String[]> paidSalesList = new ArrayList<>();
+        paidSalesList.add(new String[]{currentPaymentLog.getBillId(), currentPaymentLog.getAmount() + ""});
+        if (btsocket == null) {
+            Intent BTIntent = new Intent(getApplicationContext(), DeviceList.class);
+            startActivityForResult(BTIntent, DeviceList.REQUEST_CONNECT_BT);
+        } else {
+            BPrinter printer = new BPrinter(btsocket, PaymentReview.this);
+            FabizProvider provider = new FabizProvider(PaymentReview.this, false);
+
+            Cursor cursor = provider.query(FabizContract.Customer.TABLE_NAME, new String[]{FabizContract.Customer.COLUMN_SHOP_NAME,
+                            FabizContract.Customer.COLUMN_VAT_NO,
+                            FabizContract.Customer.COLUMN_ADDRESS_AREA,
+                            FabizContract.Customer.COLUMN_ADDRESS_ROAD,
+                            FabizContract.Customer.COLUMN_ADDRESS_BLOCK,
+                            FabizContract.Customer.COLUMN_ADDRESS_SHOP_NUM
+                    },
+                    FabizContract.Customer._ID + "=?", new String[]{custId}, null);
+            if (cursor.moveToNext()) {
+                String addressForInvoice = cursor.getString(cursor.getColumnIndex(FabizContract.Customer.COLUMN_ADDRESS_AREA));
+                if (!cursor.getString(cursor.getColumnIndex(FabizContract.Customer.COLUMN_ADDRESS_ROAD)).matches("NA")) {
+                    addressForInvoice += ", " + cursor.getString(cursor.getColumnIndex(FabizContract.Customer.COLUMN_ADDRESS_ROAD));
+                }
+                if (!cursor.getString(cursor.getColumnIndex(FabizContract.Customer.COLUMN_ADDRESS_BLOCK)).matches("NA")) {
+                    addressForInvoice += ", " + cursor.getString(cursor.getColumnIndex(FabizContract.Customer.COLUMN_ADDRESS_BLOCK));
+                }
+                if (!cursor.getString(cursor.getColumnIndex(FabizContract.Customer.COLUMN_ADDRESS_SHOP_NUM)).matches("NA")) {
+                    addressForInvoice += ", " + cursor.getString(cursor.getColumnIndex(FabizContract.Customer.COLUMN_ADDRESS_SHOP_NUM));
+                }
+
+                printer.printPaymentReciept(paidSalesList, currentPaymentLog.getAmount() + "", getIntent().getDoubleExtra("totDue", 0) + "", currentPaymentLog.getDate(),
+                        cursor.getString(cursor.getColumnIndex(FabizContract.Customer.COLUMN_SHOP_NAME)), addressForInvoice,
+                        cursor.getString(cursor.getColumnIndex(FabizContract.Customer.COLUMN_VAT_NO)));
+
+            }
         }
     }
 }

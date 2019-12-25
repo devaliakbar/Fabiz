@@ -475,7 +475,6 @@ public class AddPayment extends AppCompatActivity implements SalesReviewAdapter.
         } catch (IOException e) {
             e.printStackTrace();
         }
-        overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
     }
 
     private void showDialogueInfo(final String cDate, final List<String[]> paidSalesList, final double entAmt, final double dueAmt) {
@@ -814,9 +813,13 @@ public class AddPayment extends AppCompatActivity implements SalesReviewAdapter.
                                     showToast("Entered amount is greater than Total Due");
                                     return;
                                 }
-                                setUpBalanceAmntToAnotherBill(enteredAmt);
+                                setUpBalanceAmntToAnotherBill(enteredAmt, false);
                             } else {
-                                showToast("Entered number is less than 0");
+                                if (enteredAmt >= dueA && dueA < 0) {
+                                    setUpBalanceAmntToAnotherBill(enteredAmt, true);
+                                } else {
+                                    showToast("Please enter a valid amount");
+                                }
                             }
                         } catch (NumberFormatException e) {
                             showToast("Please enter valid amount");
@@ -828,7 +831,7 @@ public class AddPayment extends AppCompatActivity implements SalesReviewAdapter.
         });
     }
 
-    private void setUpBalanceAmntToAnotherBill(double amountToBeAdd) {
+    private void setUpBalanceAmntToAnotherBill(double amountToBeAdd, boolean negetivePayment) {
         double recievedAmnt = amountToBeAdd;
         List<SyncLogDetail> syncLogList = new ArrayList<>();
         provider.createTransaction();
@@ -836,20 +839,40 @@ public class AddPayment extends AppCompatActivity implements SalesReviewAdapter.
         Cursor balBill = provider.query(FabizContract.BillDetail.TABLE_NAME, new String[]
                         {FabizContract.BillDetail._ID, FabizContract.BillDetail.COLUMN_PAID, FabizContract.BillDetail.COLUMN_DUE},
                 FabizContract.BillDetail.COLUMN_DUE + " > ? AND " + FabizContract.BillDetail.FULL_COLUMN_CUST_ID + "=?", new String[]{"0", custId}, FabizContract.BillDetail._ID + " ASC");
+
+        if (negetivePayment) {
+            balBill = provider.query(FabizContract.BillDetail.TABLE_NAME, new String[]
+                            {FabizContract.BillDetail._ID, FabizContract.BillDetail.COLUMN_PAID, FabizContract.BillDetail.COLUMN_DUE},
+                    FabizContract.BillDetail.COLUMN_DUE + " < ? AND " + FabizContract.BillDetail.FULL_COLUMN_CUST_ID + "=?", new String[]{"0", custId}, FabizContract.BillDetail._ID + " ASC");
+        }
+
         List<String[]> paidSalesList = new ArrayList<>();
         while (balBill.moveToNext()) {
             double cBillPaidAmnt;
             double cBillDueAmt = balBill.getDouble(balBill.getColumnIndexOrThrow(FabizContract.BillDetail.COLUMN_DUE));
-            if (cBillDueAmt <= amountToBeAdd) {
-                cBillPaidAmnt = cBillDueAmt;
-                cBillDueAmt = 0;
-                amountToBeAdd -= cBillPaidAmnt;
-            } else {
-                cBillPaidAmnt = amountToBeAdd;
-                cBillDueAmt -= amountToBeAdd;
-                amountToBeAdd = 0;
-            }
 
+
+            if (negetivePayment) {
+                if (cBillDueAmt >= amountToBeAdd) {
+                    cBillPaidAmnt = cBillDueAmt;
+                    cBillDueAmt = 0;
+                    amountToBeAdd -= cBillPaidAmnt;
+                } else {
+                    cBillPaidAmnt = amountToBeAdd;
+                    cBillDueAmt -= amountToBeAdd;
+                    amountToBeAdd = 0;
+                }
+            } else {
+                if (cBillDueAmt <= amountToBeAdd) {
+                    cBillPaidAmnt = cBillDueAmt;
+                    cBillDueAmt = 0;
+                    amountToBeAdd -= cBillPaidAmnt;
+                } else {
+                    cBillPaidAmnt = amountToBeAdd;
+                    cBillDueAmt -= amountToBeAdd;
+                    amountToBeAdd = 0;
+                }
+            }
             String cbillId = balBill.getString(balBill.getColumnIndexOrThrow(FabizContract.BillDetail._ID));
 
             String idToInsertPayment = provider.getIdForInsert(FabizContract.Payment.TABLE_NAME, "");
@@ -872,8 +895,10 @@ public class AddPayment extends AppCompatActivity implements SalesReviewAdapter.
 
             if (insertIdPayment > 0) {
                 syncLogList.add(new SyncLogDetail(idToInsertPayment + "", FabizContract.Payment.TABLE_NAME, OP_INSERT));
+
                 double upPaidAmount = balBill.getDouble(balBill.getColumnIndexOrThrow(FabizContract.BillDetail.COLUMN_PAID));
                 upPaidAmount += cBillPaidAmnt;
+
 
                 ContentValues accUpValues = new ContentValues();
                 accUpValues.put(FabizContract.BillDetail.COLUMN_PAID, upPaidAmount);
