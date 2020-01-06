@@ -73,6 +73,7 @@ public class FabizProvider {
     public String getIdForInsert(String tableName, String prefixS) {
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
         BigInteger precision = new BigInteger(sharedPreferences.getInt("precision", 1) + "");
+        String globalPrecision = sharedPreferences.getString("global_precision", "1");
 
         precision = precision.multiply(new BigInteger("10000000"));
 
@@ -82,9 +83,9 @@ public class FabizProvider {
         String queryForIdSelection;
 
         if (prefixS.matches("")) {
-            queryForIdSelection = "SELECT _id FROM " + tableName + ";";
+            queryForIdSelection = "SELECT _id FROM " + tableName + " WHERE _id LIKE '" + globalPrecision + "%';";
         } else {
-            queryForIdSelection = "SELECT _id FROM " + tableName + " WHERE _id LIKE '" + prefixS + "%';";
+            queryForIdSelection = "SELECT _id FROM " + tableName + " WHERE _id LIKE '" + globalPrecision + prefixS + "%';";
         }
 
         Cursor cursor = databaseQ.rawQuery(queryForIdSelection, null);
@@ -94,6 +95,9 @@ public class FabizProvider {
         while (cursor.moveToNext()) {
 
             String fromCursorS = cursor.getString(cursor.getColumnIndexOrThrow("_id"));
+
+            fromCursorS = fromCursorS.substring(globalPrecision.length());
+
             BigInteger fromCursor = new BigInteger(fromCursorS.replaceAll("[^0-9]", ""));
 
             if (fromCursor.compareTo(currentLatest) > 0) {
@@ -114,7 +118,7 @@ public class FabizProvider {
             currentLatest = new BigInteger("-1");
         }
 
-        return currentLatest.toString();
+        return globalPrecision + prefixS + currentLatest.toString();
     }
 
     public void deleteAllTables() {

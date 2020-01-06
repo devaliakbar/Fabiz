@@ -107,7 +107,7 @@ public class AddCustomer extends AppCompatActivity {
 
                 ContentValues values = new ContentValues();
                 String idOfCuustomerToInsert = fabizProvider.getIdForInsert(FabizContract.Customer.TABLE_NAME, prefix);
-                idOfCuustomerToInsert = prefix + idOfCuustomerToInsert;
+               // idOfCuustomerToInsert =  prefix + idOfCuustomerToInsert;
 
                 values.put(FabizContract.Customer._ID, idOfCuustomerToInsert);
                 values.put(FabizContract.Customer.COLUMN_BARCODE, idOfCuustomerToInsert);

@@ -361,7 +361,7 @@ public class Sales extends AppCompatActivity implements SalesAdapter.SalesAdapte
                 return;
             }
 
-            idToInsertBill = prefix + idToInsertBill;
+           // idToInsertBill = prefix + idToInsertBill;
 
             ContentValues billValues = new ContentValues();
             billValues.put(FabizContract.BillDetail._ID, idToInsertBill);

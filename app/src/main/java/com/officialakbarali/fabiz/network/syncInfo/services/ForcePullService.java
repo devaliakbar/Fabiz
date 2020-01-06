@@ -72,7 +72,7 @@ public class ForcePullService extends Service {
 
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         userName = sharedPreferences.getString("my_username", null);
-        userId= sharedPreferences.getInt("idOfStaff", 0) + "";
+        userId = sharedPreferences.getInt("idOfStaff", 0) + "";
         mySignature = sharedPreferences.getString("mysign", null);
 
         SharedPreferences.Editor editor = sharedPreferences.edit();
@@ -137,7 +137,7 @@ public class ForcePullService extends Service {
                 try {
                     JSONObject jsonObject = new JSONObject(response);
                     if (jsonObject.getBoolean("success")) {
-                       // pullTimeStamp = jsonObject.getString("pullSignature");
+                        // pullTimeStamp = jsonObject.getString("pullSignature");
                         addDataToDb(jsonObject);
 
                     } else {
@@ -207,8 +207,11 @@ public class ForcePullService extends Service {
                             if (insertSalesReturn(jsonObject)) {
                                 if (insertPayment(jsonObject)) {
                                     if (insertUnitId(jsonObject)) {
-                                        sendConfirmRequest();
-                                        return;
+                                        if (insertInfoAndGlobalPrecision(jsonObject)) {
+                                            sendConfirmRequest();
+                                            return;
+                                        }
+
                                     }
                                 }
                             }
@@ -301,6 +304,29 @@ public class ForcePullService extends Service {
             }
         });
         requestQueue.add(volleyRequest);
+    }
+
+
+    private boolean insertInfoAndGlobalPrecision(JSONObject jsonObject) throws JSONException {
+        boolean thisSuccess = false;
+
+        if (jsonObject.getBoolean(FabizContract.Info.TABLE_NAME + "status")) {
+            JSONObject obj = jsonObject.getJSONObject(FabizContract.Info.TABLE_NAME);
+            ContentValues values = new ContentValues();
+            values.put(FabizContract.Info.COLUMN_ADDRESS, obj.getString(FabizContract.Info.COLUMN_ADDRESS));
+            values.put(FabizContract.Info.COLUMN_ORG_NAME, obj.getString(FabizContract.Info.COLUMN_ORG_NAME));
+            values.put(FabizContract.Info.COLUMN_PHONE, obj.getString(FabizContract.Info.COLUMN_PHONE));
+            values.put(FabizContract.Info.COLUMN_VAT_NO, obj.getString(FabizContract.Info.COLUMN_VAT_NO));
+            provider.insert(FabizContract.Info.TABLE_NAME, values);
+            thisSuccess = true;
+        }
+
+        SharedPreferences
+                sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString("global_precision", jsonObject.getString("g_precision"));
+        editor.apply();
+        return thisSuccess;
     }
 
     private boolean insertItem(JSONArray itemArray) throws JSONException {

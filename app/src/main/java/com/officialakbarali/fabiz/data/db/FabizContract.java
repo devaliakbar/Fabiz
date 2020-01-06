@@ -4,6 +4,15 @@ import android.provider.BaseColumns;
 
 public class FabizContract {
 
+    public static final class Info implements BaseColumns {
+        public static final String TABLE_NAME = "tb_info";
+
+        public static final String COLUMN_ORG_NAME = TABLE_NAME + "_" + "org_name";
+        public static final String COLUMN_ADDRESS = TABLE_NAME + "_" + "address";
+        public static final String COLUMN_PHONE = TABLE_NAME + "_" + "phone";
+        public static final String COLUMN_VAT_NO = TABLE_NAME + "_" + "vat_no";
+    }
+
     //-1 REQUEST ITEM
     public static final class RequestItem implements BaseColumns {
         public static final String TABLE_NAME = "tb_request_item";
@@ -82,10 +91,10 @@ public class FabizContract {
         public static final String COLUMN_EMAIL = TABLE_NAME + "_" + "email";
 
 
-        public static final String COLUMN_ADDRESS_AREA = TABLE_NAME + "_" + "address"+ "_area";
-        public static final String COLUMN_ADDRESS_ROAD = TABLE_NAME + "_" + "address"+ "_road";
-        public static final String COLUMN_ADDRESS_BLOCK = TABLE_NAME + "_" + "address"+ "_block";
-        public static final String COLUMN_ADDRESS_SHOP_NUM = TABLE_NAME + "_" + "address"+ "_shop_num";
+        public static final String COLUMN_ADDRESS_AREA = TABLE_NAME + "_" + "address" + "_area";
+        public static final String COLUMN_ADDRESS_ROAD = TABLE_NAME + "_" + "address" + "_road";
+        public static final String COLUMN_ADDRESS_BLOCK = TABLE_NAME + "_" + "address" + "_block";
+        public static final String COLUMN_ADDRESS_SHOP_NUM = TABLE_NAME + "_" + "address" + "_shop_num";
 
 
         public static final String COLUMN_TELEPHONE = TABLE_NAME + "_" + "telephone";
@@ -102,7 +111,7 @@ public class FabizContract {
         public static final String FULL_COLUMN_PHONE = TABLE_NAME + "." + COLUMN_PHONE;
         public static final String FULL_COLUMN_EMAIL = TABLE_NAME + "." + COLUMN_EMAIL;
 
-        public static final String FULL_COLUMN_ADDRESS_AREA  = TABLE_NAME + "." + COLUMN_ADDRESS_AREA;
+        public static final String FULL_COLUMN_ADDRESS_AREA = TABLE_NAME + "." + COLUMN_ADDRESS_AREA;
         public static final String FULL_COLUMN_ADDRESS_ROAD = TABLE_NAME + "." + COLUMN_ADDRESS_ROAD;
         public static final String FULL_COLUMN_ADDRESS_BLOCK = TABLE_NAME + "." + COLUMN_ADDRESS_BLOCK;
         public static final String FULL_COLUMN_ADDRESS_SHOP_NUM = TABLE_NAME + "." + COLUMN_ADDRESS_SHOP_NUM;

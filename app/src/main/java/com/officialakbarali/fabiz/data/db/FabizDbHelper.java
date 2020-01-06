@@ -28,6 +28,17 @@ public class FabizDbHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
+        //CREATING INFO TABLE
+        String SQL_CREATE_INFO_TABLE = "CREATE TABLE "
+                + FabizContract.Info.TABLE_NAME
+                + " ("
+                + FabizContract.Info._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
+                + FabizContract.Info.COLUMN_ORG_NAME + " TEXT NOT NULL, "
+                + FabizContract.Info.COLUMN_ADDRESS + " TEXT NOT NULL, "
+                + FabizContract.Info.COLUMN_PHONE + " TEXT NOT NULL, "
+                + FabizContract.Info.COLUMN_VAT_NO + " TEXT NOT NULL)";
+        db.execSQL(SQL_CREATE_INFO_TABLE);
+
         //CREATING SYNC_LOG TABLE
         String SQL_CREATE_SYNC_LOG_TABLE = "CREATE TABLE "
                 + FabizContract.SyncLog.TABLE_NAME
@@ -166,6 +177,9 @@ public class FabizDbHelper extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+        //DELETING OLD INFO TABLE
+        db.execSQL("DROP TABLE IF EXISTS " + FabizContract.Info.TABLE_NAME);
+
         //DELETING OLD SYNC_LOG TABLE
         db.execSQL("DROP TABLE IF EXISTS " + FabizContract.SyncLog.TABLE_NAME);
 
