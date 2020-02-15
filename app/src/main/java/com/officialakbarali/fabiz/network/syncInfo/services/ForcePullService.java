@@ -37,9 +37,7 @@ import static com.officialakbarali.fabiz.data.MyAppVersion.GET_MY_APP_VERSION;
 import static com.officialakbarali.fabiz.network.syncInfo.NotificationFrame.CHANNEL_ID;
 
 public class ForcePullService extends Service {
-    private static String pullTimeStamp;
-    String userName;
-    String userId;
+
     String mySignature;
     public static String FORCE_SYNC_BROADCAST_URL = "force_services.uiUpdateBroadcast";
     RequestQueue requestQueue;
@@ -71,9 +69,8 @@ public class ForcePullService extends Service {
         Log.i("ForcePullService :", "Started");
 
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-        userName = sharedPreferences.getString("my_username", null);
-        userId = sharedPreferences.getInt("idOfStaff", 0) + "";
-        mySignature = sharedPreferences.getString("mysign", null);
+
+        mySignature = sharedPreferences.getString("token", null);
 
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putBoolean("force_service_running", true);
@@ -113,7 +110,7 @@ public class ForcePullService extends Service {
     }
 
     private void startExecuteThisService() {
-        if (userName == null || mySignature == null) {
+        if (mySignature == null) {
             stopSetUp("USER");
         } else {
             requestQueue = Volley.newRequestQueue(this);
@@ -124,49 +121,26 @@ public class ForcePullService extends Service {
     private void checkForUpdate() {
         Log.i("ForcePullService", "Request Sent");
         HashMap<String, String> hashMap = new HashMap<>();
-        hashMap.put("app_version", "" + GET_MY_APP_VERSION());
-        hashMap.put("my_username", "" + userName);
-        hashMap.put("userId", "" + userId);
-        Log.i("Job", mySignature);
-        hashMap.put("mysign", "" + mySignature);
+        hashMap.put("TokenKey", "" + mySignature);
 
-        final VolleyRequest volleyRequest = new VolleyRequest("forcePull.php", hashMap, new Response.Listener<String>() {
+        final VolleyRequest volleyRequest = new VolleyRequest("GetInitData.php", hashMap, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
                 Log.i("Response :", response);
                 try {
                     JSONObject jsonObject = new JSONObject(response);
                     if (jsonObject.getBoolean("success")) {
-                        // pullTimeStamp = jsonObject.getString("pullSignature");
                         addDataToDb(jsonObject);
-
                     } else {
                         switch (jsonObject.getString("status")) {
-                            case "VERSION": {
+                            case "token": {
                                 SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(ForcePullService.this);
                                 SharedPreferences.Editor editor = sharedPreferences.edit();
-                                editor.putBoolean("version", true);
-                                editor.apply();
-                                stopSetUp("VERSION");
-                                break;
-                            }
-                            case "USER": {
-                                SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(ForcePullService.this);
-                                SharedPreferences.Editor editor = sharedPreferences.edit();
-                                editor.putString("my_username", null);
-                                editor.putString("my_password", null);
-                                editor.putBoolean("update_data", false);
+                                editor.putString("token", null);
+
                                 editor.putBoolean("force_pull", false);
                                 editor.apply();
                                 stopSetUp("USER");
-                                break;
-                            }
-                            case "PAUSE": {
-                                stopSetUp("PAUSE");
-                                break;
-                            }
-                            case "ITEM": {
-                                stopSetUp("Server is empty");
                                 break;
                             }
                             default:
@@ -233,10 +207,7 @@ public class ForcePullService extends Service {
 
         Log.i("SyncLog", "Simple Request");
         HashMap<String, String> hashMap = new HashMap<>();
-        hashMap.put("app_version", "" + GET_MY_APP_VERSION());
-        hashMap.put("my_username", "" + userName);
-        hashMap.put("mysign", "" + mySignature);
-        hashMap.put("confirm_pull", "true");
+        hashMap.put("TokenKey", "" + mySignature);
 
         final VolleyRequest volleyRequest = new VolleyRequest("simple.php", hashMap, new Response.Listener<String>() {
             @Override
@@ -253,27 +224,11 @@ public class ForcePullService extends Service {
                         stopSetUp("SUCCESS");
                     } else {
                         switch (jsonObject.getString("status")) {
-                            case "VERSION": {
-                                SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(ForcePullService.this);
-                                SharedPreferences.Editor editor = sharedPreferences.edit();
-                                editor.putBoolean("version", true);
-                                editor.apply();
-                                stopSetUp("VERSION");
-                                break;
-                            }
-                            case "PUSH": {
-                                stopSetUp("PUSH");
-                                break;
-                            }
-                            case "FAIL": {
-                                stopSetUp("FAILED");
-                                break;
-                            }
+
                             case "USER": {
                                 SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(ForcePullService.this);
                                 SharedPreferences.Editor editor = sharedPreferences.edit();
-                                editor.putString("my_username", null);
-                                editor.putString("my_password", null);
+                                editor.putString("token", null);
                                 editor.putBoolean("update_data", false);
                                 editor.putBoolean("force_pull", false);
                                 editor.apply();
@@ -307,27 +262,7 @@ public class ForcePullService extends Service {
     }
 
 
-    private boolean insertInfoAndGlobalPrecision(JSONObject jsonObject) throws JSONException {
-        boolean thisSuccess = false;
 
-        if (jsonObject.getBoolean(FabizContract.Info.TABLE_NAME + "status")) {
-            JSONObject obj = jsonObject.getJSONObject(FabizContract.Info.TABLE_NAME);
-            ContentValues values = new ContentValues();
-            values.put(FabizContract.Info.COLUMN_ADDRESS, obj.getString(FabizContract.Info.COLUMN_ADDRESS));
-            values.put(FabizContract.Info.COLUMN_ORG_NAME, obj.getString(FabizContract.Info.COLUMN_ORG_NAME));
-            values.put(FabizContract.Info.COLUMN_PHONE, obj.getString(FabizContract.Info.COLUMN_PHONE));
-            values.put(FabizContract.Info.COLUMN_VAT_NO, obj.getString(FabizContract.Info.COLUMN_VAT_NO));
-            provider.insert(FabizContract.Info.TABLE_NAME, values);
-            thisSuccess = true;
-        }
-
-        SharedPreferences
-                sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putString("global_precision", jsonObject.getString("g_precision"));
-        editor.apply();
-        return thisSuccess;
-    }
 
     private boolean insertItem(JSONArray itemArray) throws JSONException {
         boolean thisSuccess = true;

@@ -28,17 +28,6 @@ public class FabizDbHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        //CREATING INFO TABLE
-        String SQL_CREATE_INFO_TABLE = "CREATE TABLE "
-                + FabizContract.Info.TABLE_NAME
-                + " ("
-                + FabizContract.Info._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
-                + FabizContract.Info.COLUMN_ORG_NAME + " TEXT NOT NULL, "
-                + FabizContract.Info.COLUMN_ADDRESS + " TEXT NOT NULL, "
-                + FabizContract.Info.COLUMN_PHONE + " TEXT NOT NULL, "
-                + FabizContract.Info.COLUMN_VAT_NO + " TEXT NOT NULL)";
-        db.execSQL(SQL_CREATE_INFO_TABLE);
-
         //CREATING SYNC_LOG TABLE
         String SQL_CREATE_SYNC_LOG_TABLE = "CREATE TABLE "
                 + FabizContract.SyncLog.TABLE_NAME
@@ -51,18 +40,61 @@ public class FabizDbHelper extends SQLiteOpenHelper {
                 + FabizContract.SyncLog.COLUMN_OPERATION + " TEXT NOT NULL)";
         db.execSQL(SQL_CREATE_SYNC_LOG_TABLE);
 
+
+        //CREATING INFO TABLE
+        String SQL_CREATE_INFO_TABLE = "CREATE TABLE "
+                + FabizContract.Info.TABLE_NAME
+                + " ("
+                + FabizContract.Info._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
+                + FabizContract.Info.COLUMN_ORG_NAME + " TEXT NOT NULL, "
+                + FabizContract.Info.COLUMN_ADDRESS1 + " TEXT NOT NULL, "
+                + FabizContract.Info.COLUMN_ADDRESS2 + " TEXT NOT NULL, "
+                + FabizContract.Info.COLUMN_ADDRESS3 + " TEXT NOT NULL, "
+                + FabizContract.Info.COLUMN_PHONE + " TEXT NOT NULL, "
+                + FabizContract.Info.COLUMN_EMAIL + " TEXT NOT NULL, "
+                + FabizContract.Info.COLUMN_VAT_NO + " TEXT NOT NULL)";
+        db.execSQL(SQL_CREATE_INFO_TABLE);
+
+
+        //CREATING PRICE LEVEL TABLE
+        String SQL_CREATE_PRICE_LEVEL_TABLE = "CREATE TABLE "
+                + FabizContract.PriceLevel.TABLE_NAME
+                + " ("
+                + FabizContract.PriceLevel._ID + " TEXT PRIMARY KEY, "
+                + FabizContract.PriceLevel.COLUMN_PRICE_LEVEL_NAME + " TEXT NOT NULL)";
+        db.execSQL(SQL_CREATE_PRICE_LEVEL_TABLE);
+
+
         //CREATING ITEM TABLE
         String SQL_CREATE_ITEM_TABLE = "CREATE TABLE "
                 + FabizContract.Item.TABLE_NAME
                 + " ("
                 + FabizContract.Item._ID + " TEXT PRIMARY KEY , "
-                + FabizContract.Item.COLUMN_BARCODE + " TEXT, "
-                + FabizContract.Item.COLUMN_UNIT_ID + " TEXT NOT NULL, "
                 + FabizContract.Item.COLUMN_NAME + " TEXT NOT NULL, "
                 + FabizContract.Item.COLUMN_BRAND + " TEXT NOT NULL, "
                 + FabizContract.Item.COLUMN_CATEGORY + " TEXT NOT NULL,"
-                + FabizContract.Item.COLUMN_PRICE + " REAL NOT NULL)";
+                + FabizContract.Item.COLUMN_BARCODE + " TEXT, "
+                + FabizContract.Item.COLUMN_VAT_PERCENTAGE + " TEXT NOT NULL, "
+                + FabizContract.Item.COLUMN_COST + " TEXT NOT NULL, "
+                + FabizContract.Item.COLUMN_STATUS + " TEXT NOT NULL, "
+                + FabizContract.Item.COLUMN_VAT_INCLUSIVE + " TEXT NOT NULL)";
+
         db.execSQL(SQL_CREATE_ITEM_TABLE);
+
+
+        //CREATING ITEM UNIT
+        String SQL_CREATE_ITEM_UNIT = "CREATE TABLE "
+                + FabizContract.ItemUnit.TABLE_NAME
+                + " ("
+                + FabizContract.ItemUnit._ID + " TEXT PRIMARY KEY , "
+                + FabizContract.ItemUnit.COLUMN_UNIT_NAME + " TEXT NOT NULL, "
+                + FabizContract.ItemUnit.COLUMN_PRICE + " REAL NOT NULL, "
+                + FabizContract.ItemUnit.COLUMN_RETAIL_PRICE + " REAL NOT NULL, "
+                + FabizContract.ItemUnit.COLUMN_BASIC_PRICE + " REAL NOT NULL, "
+                + FabizContract.ItemUnit.COLUMN_RETAIL_BASIC_PRICE + " REAL NOT NULL, "
+                + FabizContract.ItemUnit.COLUMN_QTY + " INTEGER NOT NULL)";
+
+        db.execSQL(SQL_CREATE_ITEM_UNIT);
 
         //CREATING CUSTOMER TABLE
         String SQL_CREATE_CUSTOMER_TABLE = "CREATE TABLE "
@@ -73,20 +105,40 @@ public class FabizDbHelper extends SQLiteOpenHelper {
                 + FabizContract.Customer.COLUMN_DAY + " TEXT, "
                 + FabizContract.Customer.COLUMN_CR_NO + " TEXT NOT NULL, "
                 + FabizContract.Customer.COLUMN_SHOP_NAME + " TEXT NOT NULL, "
-
-                + FabizContract.Customer.COLUMN_VAT_NO + " TEXT NOT NULL, "
-                + FabizContract.Customer.COLUMN_TELEPHONE + " TEXT NOT NULL, "
-
-
-                + FabizContract.Customer.COLUMN_NAME + " TEXT NOT NULL, "
+                + FabizContract.Customer.COLUMN_VAT_NUMBER + " TEXT NOT NULL, "
+                + FabizContract.Customer.COLUMN_PRICE_LEVEL + " TEXT NOT NULL, "
+                + FabizContract.Customer.COLUMN_CONTACT_NAME + " TEXT NOT NULL, "
                 + FabizContract.Customer.COLUMN_PHONE + " TEXT NOT NULL, "
                 + FabizContract.Customer.COLUMN_EMAIL + " TEXT NOT NULL,"
-
+                + FabizContract.Customer.COLUMN_STATUS_CODE + " TEXT NOT NULL,"
                 + FabizContract.Customer.COLUMN_ADDRESS_AREA + " TEXT NOT NULL,"
                 + FabizContract.Customer.COLUMN_ADDRESS_ROAD + " TEXT NOT NULL,"
                 + FabizContract.Customer.COLUMN_ADDRESS_BLOCK + " TEXT NOT NULL,"
                 + FabizContract.Customer.COLUMN_ADDRESS_SHOP_NUM + " TEXT NOT NULL)";
         db.execSQL(SQL_CREATE_CUSTOMER_TABLE);
+
+        //CREATING PENDING SALE TABLE
+        String SQL_CREATE_PENDING_SALE_TABLE = "CREATE TABLE "
+                + FabizContract.PendingSales.TABLE_NAME
+                + " ("
+                + FabizContract.PendingSales.COLUMN_BILL_ID + " TEXT PRIMARY KEY , "
+                + FabizContract.PendingSales.COLUMN_BRANCH_ID + " TEXT, "
+                + FabizContract.PendingSales.COLUMN_CUST_ID + " TEXT, "
+                + FabizContract.PendingSales.COLUMN_BILL_DATE + " TEXT NOT NULL, "
+                + FabizContract.PendingSales.COLUMN_TAXABLE + " REAL NOT NULL, "
+                + FabizContract.PendingSales.COLUMN_VAT + " REAL NOT NULL, "
+                + FabizContract.PendingSales.COLUMN_GROSS + " REAL NOT NULL, "
+                + FabizContract.PendingSales.COLUMN_BILL_DISCOUNT + " REAL NOT NULL, "
+                + FabizContract.PendingSales.COLUMN_BILL_NET_AMOUNT + " REAL NOT NULL, "
+                + FabizContract.PendingSales.COLUMN_RECEIVED + " REAL NOT NULL,"
+                + FabizContract.PendingSales.COLUMN_RETURNED + " REAL NOT NULL,"
+                + FabizContract.PendingSales.COLUMN_OTHER_ADJUST + " REAL NOT NULL,"
+                + FabizContract.PendingSales.COLUMN_DISCOUNT_LATER + " REAL NOT NULL,"
+                + FabizContract.PendingSales.COLUMN_DUE + " REAL NOT NULL,"
+                + FabizContract.PendingSales.COLUMN_STATUS_CODE + " TEXT NOT NULL)";
+        db.execSQL(SQL_CREATE_PENDING_SALE_TABLE);
+
+        //***************************************upto new
 
         //CREATING BILL DETAIL
         String SQL_CREATE_BILL_DETAIL_TABLE = "CREATE TABLE "
@@ -154,15 +206,6 @@ public class FabizDbHelper extends SQLiteOpenHelper {
 
         db.execSQL(SQL_CREATE_PAYMENT);
 
-        //CREATING ITEM UNIT
-        String SQL_CREATE_ITEM_UNIT = "CREATE TABLE "
-                + FabizContract.ItemUnit.TABLE_NAME
-                + " ("
-                + FabizContract.ItemUnit._ID + " TEXT PRIMARY KEY , "
-                + FabizContract.ItemUnit.COLUMN_UNIT_NAME + " TEXT NOT NULL, "
-                + FabizContract.ItemUnit.COLUMN_QTY + " INTEGER NOT NULL)";
-
-        db.execSQL(SQL_CREATE_ITEM_UNIT);
 
         //CREATING REQUEST ITEM
         String SQL_CREATE_REQUEST_ITEM = "CREATE TABLE "
@@ -177,17 +220,28 @@ public class FabizDbHelper extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+        //DELETING OLD SYNC_LOG TABLE
+        db.execSQL("DROP TABLE IF EXISTS " + FabizContract.SyncLog.TABLE_NAME);
+
         //DELETING OLD INFO TABLE
         db.execSQL("DROP TABLE IF EXISTS " + FabizContract.Info.TABLE_NAME);
 
-        //DELETING OLD SYNC_LOG TABLE
-        db.execSQL("DROP TABLE IF EXISTS " + FabizContract.SyncLog.TABLE_NAME);
+        //DELETING OLD PRICE LEVEL TABLE
+        db.execSQL("DROP TABLE IF EXISTS " + FabizContract.PriceLevel.TABLE_NAME);
 
         //DELETING ITEM TABLE
         db.execSQL("DROP TABLE IF EXISTS " + FabizContract.Item.TABLE_NAME);
 
+        //DELETING OLD ITEM_UNIT TABLE
+        db.execSQL("DROP TABLE IF EXISTS " + FabizContract.ItemUnit.TABLE_NAME);
+
         //DELETING OLD CUSTOMER TABLE
         db.execSQL("DROP TABLE IF EXISTS " + FabizContract.Customer.TABLE_NAME);
+
+        //DELETING OLD PENDING SALE TABLE
+        db.execSQL("DROP TABLE IF EXISTS " + FabizContract.PendingSales.TABLE_NAME);
+
+        ///******new
 
         //DELETING OLD BILL DETAIL TABLE
         db.execSQL("DROP TABLE IF EXISTS " + FabizContract.BillDetail.TABLE_NAME);
@@ -201,8 +255,7 @@ public class FabizDbHelper extends SQLiteOpenHelper {
         //DELETING OLD PAYMENT TABLE
         db.execSQL("DROP TABLE IF EXISTS " + FabizContract.Payment.TABLE_NAME);
 
-        //DELETING OLD ITEM_UNIT TABLE
-        db.execSQL("DROP TABLE IF EXISTS " + FabizContract.ItemUnit.TABLE_NAME);
+
 
         //DELETING OLD REQUEST_ITEM TABLE
         db.execSQL("DROP TABLE IF EXISTS " + FabizContract.RequestItem.TABLE_NAME);

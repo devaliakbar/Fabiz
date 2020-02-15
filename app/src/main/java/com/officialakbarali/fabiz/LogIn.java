@@ -67,7 +67,7 @@ public class LogIn extends AppCompatActivity {
                     showToast("Please enter username");
                 } else {
                     if (passwordString.matches("")) {
-                        showToast("Please eneter password");
+                        showToast("Please enter password");
                     } else {
                         performLogIn(usernameString, passwordString);
                     }
@@ -103,9 +103,7 @@ public class LogIn extends AppCompatActivity {
         showLoading(true);
         hideKeybord();
         RequestQueue requestQueue = Volley.newRequestQueue(this);
-
         HashMap<String, String> hashMap = new HashMap<>();
-        hashMap.put("app_version", "" + GET_MY_APP_VERSION());
         hashMap.put("my_username", "" + username);
         hashMap.put("my_password", "" + password);
 
@@ -117,18 +115,9 @@ public class LogIn extends AppCompatActivity {
                 try {
                     JSONObject jsonObject = new JSONObject(response);
                     if (jsonObject.getBoolean("success")) {
-                        proceed(username, password, jsonObject.getString("mysign"), jsonObject.getInt("precision"), jsonObject.getInt("idOfStaff"), jsonObject.getString("nameOfStaff"));
+                        proceed(jsonObject);
                     } else {
-                        if (jsonObject.getString("status").equals("VERSION")) {
-                            SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(LogIn.this);
-                            SharedPreferences.Editor editor = sharedPreferences.edit();
-                            editor.putBoolean("version", true);
-                            editor.apply();
-                            Intent versionIntent = new Intent(LogIn.this, AppVersion.class);
-                            versionIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
-                            startActivity(versionIntent);
-                            overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
-                        } else if (jsonObject.getString("status").equals("USER")) {
+                        if (jsonObject.getString("status").equals("USER")) {
                             showToast("Invalid username or password");
                         } else {
                             showToast("Something went wrong");
@@ -156,26 +145,23 @@ public class LogIn extends AppCompatActivity {
         requestQueue.add(volleyRequest);
     }
 
-    private void proceed(String username, String password, String mysign, int precision, int idOfStaff, String staffName) {
+    private void proceed(JSONObject userInfo) throws JSONException {
         final SharedPreferences
                 sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         final SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putString("my_username", username);
-        editor.putString("my_password", password);
-        editor.putString("mysign", mysign);
+        editor.putString("token", userInfo.getString("user_token_key"));
+        editor.putString("prefix", userInfo.getString("user_prefix"));
+        editor.putString("nameOfStaff", userInfo.getString("user_staff_name"));
+        editor.putString("branchId", userInfo.getString("user_branch_id"));
+        editor.putString("branchName", userInfo.getString("user_branch_name"));
+        editor.putString("branchVat", userInfo.getString("user_branch_vat"));
+
         editor.putBoolean("update_data", false);
         editor.putBoolean("force_pull", true);
-        editor.putInt("precision", precision);
-        editor.putInt("idOfStaff", idOfStaff);
-        editor.putString("nameOfStaff", staffName);
-
-
         editor.putInt("decimal_precision", 2);
         SET_DECIMAL_LENGTH(2);
-
         editor.putString("currency", "BD");
         setCurrency("BD");
-        editor.putInt("app_version_no", GET_MY_APP_VERSION());
         editor.apply();
 
 
